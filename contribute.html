@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Contribute &mdash; FPGA Professional Association</title>
+  <meta name="description" content="How to contribute to the FPGA Professional Association: site, tools, content, working groups, and chapters.">
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<header class="site-header">
+  <div class="site-header__inner">
+    <a class="site-header__brand" href="/">FPGA PA</a>
+    <nav class="site-nav" aria-label="Main">
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/about.html">About</a></li>
+        <li><a href="/resources.html">Resources</a></li>
+        <li><a href="/tools.html">Tools</a></li>
+        <li><a href="/contribute.html" aria-current="page">Contribute</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main id="main" class="site-main">
+  <div class="container">
+    <article>
+
+      <h1>Contribute</h1>
+
+      <h2>Why contribute</h2>
+      <p>The association is what its volunteers make it. Every page on this site, every feature in CovertEDA, and every published resource started as a pull request from someone who saw a gap and filled it. No contributor is paid; all contributions are credited.</p>
+
+      <h2>Ways to contribute</h2>
+
+      <h3>Improve this site</h3>
+      <p>Fork <a href="https://github.com/fpga-professional-association/fpgapa_website">the website repository</a>, edit HTML, CSS, or markdown, and open a pull request. Typo fixes are welcome. New resource entries are welcome. Design improvements are welcome if they respect the constraints in <code>BUILD_PLAN.md</code> &mdash; no JavaScript frameworks, no third-party fonts, no decorative images that do not add information. All pull requests are reviewed by Travis personally; he is the sole required approver.</p>
+
+      <h3>Contribute to CovertEDA</h3>
+      <p>The CovertEDA codebase is at <a href="https://github.com/fpga-professional-association/CovertEDA">github.com/fpga-professional-association/CovertEDA</a>. Areas that need work: vendor backend integration (Vivado, Quartus, Radiant, Libero), report parsers, constraint validation, and platform packaging. Rust experience is helpful but not required for documentation and integration testing contributions.</p>
+
+      <h3>Write a resource</h3>
+      <p>Career notes, technical guides, and well-structured war stories are accepted as Markdown pull requests to the resources repository. State the problem, walk through the situation, and end with the takeaway. No marketing language. Citations for any non-trivial claim.</p>
+
+      <h3>Volunteer for a working group</h3>
+      <p>Active working groups: salary survey, interview preparation, regional chapter formation. Email <a href="mailto:contact@fpga-pa.org">contact@fpga-pa.org</a> with a short note about the area you want to work on and what time you can commit.</p>
+
+      <h3>Start a regional chapter</h3>
+      <p>Regional chapters meet locally &mdash; quarterly is a reasonable cadence &mdash; to share experience, run mock interviews, and review each other&rsquo;s work. Email the contact address with the metro area you would coordinate.</p>
+
+      <h2>Pull request workflow for this site</h2>
+      <ol>
+        <li>Fork the <a href="https://github.com/fpga-professional-association/fpgapa_website">website repository</a>.</li>
+        <li>Create a branch (<code>git checkout -b your-change</code>).</li>
+        <li>Edit the files. Preview locally by opening <code>index.html</code> in your browser.</li>
+        <li>Open a pull request with a clear title and one-sentence description.</li>
+        <li>Continuous integration runs HTML validation, accessibility checks, and link checking automatically.</li>
+        <li>Travis reviews. Most reviews land within seven days.</li>
+        <li>On approval, the change merges and deploys automatically to the live site.</li>
+      </ol>
+
+      <h2>What we won&rsquo;t merge</h2>
+      <ul>
+        <li>Marketing language: <em>transform</em>, <em>revolutionary</em>, <em>best-in-class</em>, <em>industry-leading</em>, <em>cutting-edge</em>, <em>next-generation</em>.</li>
+        <li>Vendor-promotional content that breaks vendor neutrality.</li>
+        <li>Tracking scripts or analytics that require cookie consent.</li>
+        <li>JavaScript frameworks, CSS frameworks, build steps, third-party fonts or CDNs.</li>
+        <li>Numeric claims without a citation.</li>
+        <li>Decorative images that do not add information.</li>
+        <li>New top-level pages without prior discussion.</li>
+      </ul>
+
+      <p>The association is volunteer-run. No contributor is paid. All contributions are credited.</p>
+
+    </article>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="site-footer__inner">
+    <p>Code: <a href="https://github.com/fpga-professional-association/fpgapa_website/blob/main/LICENSE">MIT</a>. Content: <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.</p>
+    <p><a href="https://github.com/fpga-professional-association/fpgapa_website">Source on GitHub</a> &middot; <a href="mailto:contact@fpga-pa.org">contact@fpga-pa.org</a></p>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,44 @@
+# Validates HTML, blocks inline JS / external CDNs, checks internal links.
+# Runs on every PR + push to main. Must pass before merge.
+name: validate
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  html:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: HTML validation
+        run: npx --yes html-validate "**/*.html"
+
+      - name: Block inline scripts
+        run: |
+          if grep -rEln "<script" --include="*.html" .; then
+            echo "ERROR: inline <script> tags are not allowed."
+            exit 1
+          fi
+
+      - name: Block external CDN / fonts
+        run: |
+          if grep -rEln "fonts\.googleapis|fonts\.gstatic|cdnjs\.|jsdelivr|unpkg|googletagmanager|google-analytics" \
+              --include="*.html" --include="*.css" .; then
+            echo "ERROR: external CDN / font references are not allowed."
+            exit 1
+          fi
+
+      - name: Internal link check
+        # Absolute paths like "/styles.css" only resolve over HTTP, so serve
+        # the repo on localhost and crawl from there. Skip everything that
+        # isn't localhost so external links don't gate the build.
+        run: |
+          npx --yes http-server -p 8765 --silent -c-1 &
+          sleep 2
+          npx --yes linkinator http://localhost:8765/ --recurse --skip "^https?://(?!localhost)"

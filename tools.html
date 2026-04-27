@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tools &mdash; FPGA Professional Association</title>
+  <meta name="description" content="CovertEDA and other open-source tools from the FPGA Professional Association.">
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<header class="site-header">
+  <div class="site-header__inner">
+    <a class="site-header__brand" href="/">FPGA PA</a>
+    <nav class="site-nav" aria-label="Main">
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/about.html">About</a></li>
+        <li><a href="/resources.html">Resources</a></li>
+        <li><a href="/tools.html" aria-current="page">Tools</a></li>
+        <li><a href="/contribute.html">Contribute</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main id="main" class="site-main">
+  <div class="container">
+    <article>
+
+      <h1>Tools</h1>
+
+      <h2>CovertEDA</h2>
+      <p class="lead">A replacement GUI for the major FPGA vendor toolchains &mdash; AMD/Xilinx Vivado, Intel/Altera Quartus Prime, Lattice Radiant, and Microchip Libero SoC. Built in Rust and Tauri. Open source.</p>
+
+      <p>The vendor GUI problem is well known to anyone who uses these tools daily. Each is slow to launch, prone to long internal rebuilds, and presents four substantially different interfaces for what is fundamentally the same job. Engineers learn one vendor&rsquo;s UI, then learn the next from scratch. None of the GUIs were designed in the last decade; several are written in toolkits that are no longer actively maintained.</p>
+
+      <p>CovertEDA replaces the GUI without replacing the tools. The vendor compilers, fitters, and bitstream generators run unchanged &mdash; CovertEDA invokes them through their existing CLI and TCL interfaces and presents the results through one fast frontend. The same project structure, the same constraint files, the same vendor-supported flows. Build times are identical because the vendor tool is doing the build.</p>
+
+      <p>What changes is the developer experience around the build: native Git integration, a single search across logs and reports, AI-assisted help for vendor error messages and constraint authoring, instant project switching, and a UI that responds to keystrokes within a frame.</p>
+
+      <p>Status: public beta. The repository is at <a href="https://github.com/fpga-professional-association/CovertEDA">github.com/fpga-professional-association/CovertEDA</a>. Build instructions are in the project README.</p>
+
+      <h2>Future tools</h2>
+      <p>Additional tools in development include a unified timing report parser and visualizer that consumes the report formats of every supported vendor and presents one comparable view. The same model applies &mdash; solve a universal daily frustration, build it well, release it free.</p>
+
+    </article>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="site-footer__inner">
+    <p>Code: <a href="https://github.com/fpga-professional-association/fpgapa_website/blob/main/LICENSE">MIT</a>. Content: <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.</p>
+    <p><a href="https://github.com/fpga-professional-association/fpgapa_website">Source on GitHub</a> &middot; <a href="mailto:contact@fpga-pa.org">contact@fpga-pa.org</a></p>
+  </div>
+</footer>
+
+</body>
+</html>

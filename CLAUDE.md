@@ -105,7 +105,7 @@ Per `BUILD_PLAN.md` §6:
 
 ## Approved page set (v1)
 
-Five pages only. Adding pages requires Travis's approval.
+Five pages only. Adding pages requires maintainer approval.
 
 1. `index.html` — Home
 2. `about.html` — About
@@ -122,7 +122,7 @@ All changes flow through pull requests.
 1. Branch from `main`.
 2. Edit HTML / CSS / Markdown.
 3. Open PR. CI runs automatically.
-4. Travis reviews. He is the sole required approver.
+4. The maintainer reviews and is the sole required approver.
 5. On approval, merge (squash or rebase). Site auto-deploys.
 
 Branch protection on `main` requires: 1 approving review, status checks pass, linear history. No force pushes.

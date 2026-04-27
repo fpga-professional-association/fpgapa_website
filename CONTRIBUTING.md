@@ -13,7 +13,7 @@ Thanks for considering a contribution. This project is volunteer-run and contrib
 4. Edit files. Preview locally by opening `index.html` in your browser.
 5. Commit, push to your fork, and open a pull request against `main`.
 
-CI validates HTML and checks internal links automatically. Travis reviews all PRs personally; he is the sole required approver. Most reviews land within seven days.
+CI validates HTML and checks internal links automatically. The maintainer reviews all PRs and is the sole required approver. Most reviews land within seven days.
 
 ## What we will not merge
 

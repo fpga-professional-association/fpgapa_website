@@ -32,7 +32,7 @@ Read `CONTRIBUTING.md` first. Briefly:
 3. Edit HTML / CSS / Markdown.
 4. Open a PR with a clear description.
 5. CI runs HTML validation and link checking.
-6. Travis reviews. He is the sole required approver.
+6. The maintainer reviews and is the sole required approver.
 
 ## License
 

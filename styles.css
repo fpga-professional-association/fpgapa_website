@@ -401,6 +401,21 @@ section + section {
   margin: 0 0 var(--space-1);
 }
 
+.site-footer__contact {
+  font-size: 1rem;
+  color: var(--color-fg);
+  margin-bottom: var(--space-2);
+}
+
+.site-footer__contact a {
+  color: var(--color-accent);
+  text-decoration: underline;
+}
+
+.site-footer__contact a:hover {
+  color: var(--color-accent-hover);
+}
+
 .site-footer a {
   color: var(--color-fg-muted);
   text-decoration: underline;

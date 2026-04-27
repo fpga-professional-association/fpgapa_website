@@ -1,7 +1,7 @@
 # FPGA Professional Association — Website Build Plan
 
 **Audience:** Claude Code (implementation agent)
-**Owner:** Travis (sole approver of all PRs)
+**Owner:** Site maintainer (sole approver of all PRs)
 **Repository:** `https://github.com/fpga-professional-association/fpgapa_website`
 **Hosting:** GitHub Pages (free, served directly from `main` branch)
 **License:** MIT (code) / CC BY 4.0 (content)
@@ -16,7 +16,7 @@ Build a public, open-source website for the FPGA Professional Association that:
 2. **Loads instantly.** Pure static HTML/CSS. No JavaScript frameworks. No build step. No `node_modules`.
 3. **Is trivially contributable.** Any engineer who knows basic HTML/CSS should be able to fork, edit, and submit a PR in under 10 minutes. No tooling barriers.
 4. **Is hosted entirely on GitHub.** GitHub Pages from the `main` branch. Optional custom domain configured via DNS later.
-5. **Enforces single-approver workflow.** All changes flow through pull requests. Branch protection requires Travis's approval before merge.
+5. **Enforces single-approver workflow.** All changes flow through pull requests. Branch protection requires the maintainer's approval before merge.
 
 ### Non-Goals (explicitly out of scope for v1)
 
@@ -187,7 +187,7 @@ Type scale (modular, ratio 1.2):
 
 ### 6.4 Components
 
-Keep this list short. Anything not in it requires Travis approval.
+Keep this list short. Anything not in it requires maintainer approval.
 
 - Header / nav
 - Footer
@@ -268,7 +268,7 @@ State: the association is volunteer-run; no contributor is paid; all contributio
 - Default branch: `main`.
 - Branch protection on `main`:
   - Require pull request before merging.
-  - Require 1 approving review (Travis).
+  - Require 1 approving review (the maintainer).
   - Dismiss stale approvals on new commits.
   - Require status checks to pass: HTML validation workflow.
   - Require linear history (squash or rebase merges only).
@@ -389,7 +389,7 @@ Enforced in review.
 - All links resolve.
 - HTML validates.
 - Accessibility lint passes.
-- Branch protection on `main` is active and Travis is the sole required reviewer.
+- Branch protection on `main` is active and the maintainer is the sole required reviewer.
 - `README.md` documents how to clone, edit, and contribute.
 - `CONTRIBUTING.md` includes the content guidelines from §11.
 - No third-party fonts, analytics, or CDN assets anywhere.
@@ -398,7 +398,7 @@ Enforced in review.
 
 ---
 
-## 14. Open Questions for Travis
+## 14. Open Questions for the Maintainer
 
 1. **Domain.** Is a custom domain registered? If so, what is it?
 2. **Logo / wordmark.** Is there an existing wordmark? If not, the placeholder is a simple monospace `FPGA PA` until one is designed.

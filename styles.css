@@ -46,6 +46,9 @@
 html {
   font-size: 17px;
   -webkit-text-size-adjust: 100%;
+  /* Reserve scrollbar space on every page so short pages (e.g. /tools.html)
+     don't shift the centered header sideways relative to taller pages. */
+  scrollbar-gutter: stable;
 }
 
 body {

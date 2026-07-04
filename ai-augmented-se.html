@@ -4,11 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>AI-Augmented Systems Engineering &mdash; FPGA Professional Association</title>
-  <meta name="description" content="A 15-week professional-development course on systems engineering when AI is both a tool the engineer uses and a component the engineer must build. Slide decks free to download.">
+  <meta name="description" content="A professional-development course on systems engineering when AI is both a tool the engineer uses and a component the engineer must build. Slide decks free to download.">
   <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
   <link rel="stylesheet" href="/styles.css">
   <meta property="og:title" content="AI-Augmented Systems Engineering">
-  <meta property="og:description" content="A 15-week professional-development course from the FPGA Professional Association. Function allocation, verification, and human judgment in complex engineering systems.">
+  <meta property="og:description" content="A professional-development course from the FPGA Professional Association. Function allocation, verification, and human judgment in complex engineering systems.">
   <meta property="og:type" content="website">
 </head>
 <body>
@@ -37,7 +37,7 @@
       <p class="small"><a href="/resources.html">Resources</a> &rsaquo; Professional development</p>
 
       <h1>AI-Augmented Systems Engineering</h1>
-      <p class="lead">A 15-week professional-development course on systems engineering for a new class of system &mdash; one where artificial intelligence is both a tool the engineer uses and a component the engineer must build. Every slide deck is free to download below.</p>
+      <p class="lead">A professional-development course on systems engineering for a new class of system &mdash; one where artificial intelligence is both a tool the engineer uses and a component the engineer must build. Every slide deck is free to download below.</p>
 
       <h2>What the course covers</h2>
       <p>The course is grounded in International Council on Systems Engineering (INCOSE) practice and assumes a first course in systems engineering. It applies that foundation to systems that contain a learned, probabilistic component, where the classical assumption of deterministic parts no longer holds. It is written for engineers across every discipline: each team carries one system from its own field &mdash; a delivery drone, an infusion pump, a smart bridge, an electric-vehicle battery pack, a robotic warehouse &mdash; through the full lifecycle.</p>
@@ -51,18 +51,23 @@
         <dd>A learned element behaves probabilistically, depends on its training distribution, and resists inspection. It must be specified, allocated, verified, assured, and certified like any other part &mdash; but by new means.</dd>
       </dl>
 
-      <h2>Format</h2>
-      <p>Fifteen weeks, three credit hours or the equivalent in professional-development contact hours. The schedule moves through three phases: foundations (weeks 1&ndash;7), assurance (weeks 8&ndash;12), and synthesis (weeks 13&ndash;15). A running team project carries one system through five staged reviews &mdash; from a concept of operations and requirements, through architecture and a trade study, to an integrated verification, reliability, and risk plan, and a defended final report. Problem sets, a midterm over the first seven modules, and a comprehensive final round out the work.</p>
+      <h2>Why this matters now</h2>
+      <p>For most of engineering&rsquo;s history, most engineers worked as implementors. Given a specification, they produced the artifact &mdash; the code, the register-transfer-level (RTL) description, the drawing, the analysis. A smaller group of systems engineers worked at the level of the whole: requirements, interfaces, function allocation, integration, verification, and the trade-offs among them.</p>
+      <p>AI collapses the cost of implementation. When a model can draft the code, the test bench, the document, or the analysis in seconds, producing the artifact is no longer the scarce, decisive work. What stays scarce is everything above it &mdash; deciding what to build, specifying it precisely enough to be checkable, defining the interfaces between many fast-generated parts, verifying that the result meets the need, and owning the outcome. That work is systems engineering.</p>
+      <p>So AI does not only make implementors faster; it raises their altitude. Any engineer who uses AI to generate work is pushed, at least in part, into the systems engineer&rsquo;s role. The bottleneck moves from &ldquo;can I build this piece&rdquo; to &ldquo;can I specify, integrate, and assure the whole.&rdquo; As output grows, so does complexity &mdash; more components, more interfaces, more integration points, faster change. Managing that complexity, through boundaries, interfaces, requirements traceability, verification, and risk, is exactly the systems engineer&rsquo;s craft. This course teaches that craft deliberately, and treats AI itself as one more component that must be specified, verified, and signed for.</p>
+
+      <h2>How it is organized</h2>
+      <p>The material is organized in three parts &mdash; foundations, assurance, and synthesis &mdash; and follows a single running example: one system carried from its concept of operations and requirements, through architecture, modeling, and a trade study, into verification, reliability, risk, certification, and the human role. Each lecture is a self-contained slide deck.</p>
 
       <h2>Slide decks</h2>
-      <p>The decks are Microsoft PowerPoint files (<code>.pptx</code>). Each weekly deck is roughly 110&ndash;150&nbsp;KB; the course overview is about 690&nbsp;KB. Start with the overview, which sets up the framing and the semester roadmap.</p>
+      <p>The decks are Microsoft PowerPoint files (<code>.pptx</code>). Most are 110&ndash;150&nbsp;KB; the overview and the expanded Week 1 deck are larger. Start with the overview, which sets up the framing and the roadmap.</p>
       <p><a class="btn btn--primary" href="/assets/courses/ai-augmented-se/FPGAPA_AIAugmentedSE_Course_Overview.pptx">Download the course overview deck</a></p>
 
-      <h3>Weeks 1&ndash;7 &middot; Foundations</h3>
+      <h3>Part 1 &middot; Foundations</h3>
       <p>The lifecycle and analysis toolkit: how the work is structured, what a requirement is, where function is allocated, and how a system is modeled and searched.</p>
       <table>
         <thead>
-          <tr><th>Week</th><th>Lecture</th><th>Focus</th></tr>
+          <tr><th>#</th><th>Lecture</th><th>Focus</th></tr>
         </thead>
         <tbody>
           <tr>
@@ -103,11 +108,11 @@
         </tbody>
       </table>
 
-      <h3>Weeks 8&ndash;12 &middot; Assurance</h3>
+      <h3>Part 2 &middot; Assurance</h3>
       <p>Making the case that the system works: verification and validation of learned components, reliability, risk, program control, and certification.</p>
       <table>
         <thead>
-          <tr><th>Week</th><th>Lecture</th><th>Focus</th></tr>
+          <tr><th>#</th><th>Lecture</th><th>Focus</th></tr>
         </thead>
         <tbody>
           <tr>
@@ -138,11 +143,11 @@
         </tbody>
       </table>
 
-      <h3>Weeks 13&ndash;15 &middot; Synthesis</h3>
-      <p>The human role and the close: where judgment stays decisive, how integration and agentic workflows change the work, and the framework that ties the semester together.</p>
+      <h3>Part 3 &middot; Synthesis</h3>
+      <p>The human role and the close: where judgment stays decisive, how integration and agentic workflows change the work, and the framework that ties the course together.</p>
       <table>
         <thead>
-          <tr><th>Week</th><th>Lecture</th><th>Focus</th></tr>
+          <tr><th>#</th><th>Lecture</th><th>Focus</th></tr>
         </thead>
         <tbody>
           <tr>
@@ -176,6 +181,9 @@
         <dd>AI sees signatures below human perception. The human owns the detection design and the response.</dd>
       </dl>
       <p>Allocate by mode, verify by evidence, certify by accountability, and engineer the human role deliberately.</p>
+
+      <h2>Where this fits in a curriculum</h2>
+      <p>These lectures form an overlay on a standard graduate systems-engineering curriculum: the systems-engineering method is the foundation, and the treatment of AI as both tool and component is what this course adds. For a worked example, see <a href="/curriculum-fit.html">how the lectures map onto a graduate systems-engineering program</a>.</p>
 
       <h2>Use and licensing</h2>
       <p>These materials are published by the FPGA Professional Association for professional development. Written content on this site is available under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. To ask about running the course or contributing improvements, email <a href="mailto:contact@fpgapa.org">contact@fpgapa.org</a>.</p>

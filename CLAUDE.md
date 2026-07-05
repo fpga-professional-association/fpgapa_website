@@ -48,6 +48,8 @@ fpgapa_website/
 ├── resources.html
 ├── tools.html
 ├── contribute.html
+├── blog.html               # Blog index
+├── blog/                   # Individual posts
 ├── 404.html
 ├── styles.css              # Single style file. Custom properties for theming.
 └── assets/
@@ -114,6 +116,8 @@ Five pages only. Adding pages requires maintainer approval.
 5. `contribute.html` — Contribute
 
 Plus `404.html` (custom 404).
+
+Maintainer-approved additions beyond v1: `ai-augmented-se.html`, `curriculum-fit.html`, `blog.html` plus posts under `blog/`. The blog ships now as static HTML (no Jekyll, no build step), superseding the "defer to Jekyll" plan in `BUILD_PLAN.md` §15.
 
 ## PR workflow
 

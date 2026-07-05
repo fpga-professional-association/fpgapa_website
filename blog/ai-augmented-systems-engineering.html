@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Systems engineering for FPGAs &mdash; FPGA Professional Association</title>
+  <meta name="description" content="A summary of the association's AI-Augmented Systems Engineering course, and why FPGA teams building systems with learned components need the discipline it teaches.">
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+  <link rel="stylesheet" href="/styles.css">
+  <meta property="og:title" content="Systems engineering for FPGA design in the age of AI">
+  <meta property="og:description" content="A summary of the AI-Augmented Systems Engineering course, and why FPGA teams need it.">
+  <meta property="og:type" content="article">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<header class="site-header">
+  <div class="site-header__inner">
+    <a class="site-header__brand" href="/">FPGA PA</a>
+    <nav class="site-nav" aria-label="Main">
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/about.html">About</a></li>
+        <li><a href="/resources.html">Resources</a></li>
+        <li><a href="/tools.html">Tools</a></li>
+        <li><a href="/blog.html" aria-current="page">Blog</a></li>
+        <li><a href="/contribute.html">Contribute</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main id="main" class="site-main">
+  <div class="container">
+    <article>
+
+      <p class="small"><a href="/blog.html">Blog</a> &rsaquo; Systems engineering for FPGA design in the age of AI</p>
+
+      <h1>Systems engineering for FPGA design in the age of AI</h1>
+      <p class="lead">Field-programmable gate array (FPGA) teams are adopting artificial intelligence (AI) two ways at once: as a tool that drafts register-transfer-level (RTL) code and test benches faster, and as a component &mdash; a learned inference core placed directly on programmable logic. The association&rsquo;s <a href="/ai-augmented-se.html">AI-Augmented Systems Engineering</a> course treats both, and this post summarizes what it covers.</p>
+      <p class="small">Published 2026-07-05.</p>
+
+      <h2>Why this applies to FPGA work specifically</h2>
+      <p>FPGA design already sits at the intersection the course is built around. On one side, AI coding assistants now draft RTL, testbenches, and constraint files, which raises the same question systems engineers have always asked of any implementor: producing the artifact was never the hard part, specifying and verifying it was. On the other side, FPGA fabric is a common home for neural-network inference accelerators &mdash; a learned, probabilistic component instantiated alongside deterministic logic on the same die. A design that mixes a hand-written state machine with a quantized inference core cannot be verified the way either half would be verified alone. That is a systems-engineering problem, not a tooling problem, and it is the one the course addresses.</p>
+
+      <h2>The two dualities</h2>
+      <dl>
+        <dt>AI for systems engineering</dt>
+        <dd>AI accelerates requirements analysis, design-space exploration, verification, and documentation. The engineer stays the originator, the judge of quality, and the one who fixes what the tool gets wrong.</dd>
+
+        <dt>Systems engineering for AI</dt>
+        <dd>A learned component &mdash; an inference core, a learned controller &mdash; behaves probabilistically and depends on its training distribution. It has to be specified, allocated, verified, assured, and certified like any other part of the system, but by different means than a fixed-function block.</dd>
+      </dl>
+
+      <h2>How the course is organized</h2>
+      <p>Fifteen weekly lecture decks, plus a course overview, are organized into three parts and follow one running example carried from concept of operations through capstone. All decks are free Microsoft PowerPoint (<code>.pptx</code>) downloads.</p>
+      <ul>
+        <li><strong>Part 1, Foundations (weeks 1&ndash;7).</strong> Lifecycle models, requirements and concept of operations, function allocation across human/algorithmic/AI elements, Model-Based Systems Engineering (MBSE), trade studies, and graph-theoretic system analysis.</li>
+        <li><strong>Part 2, Assurance (weeks 8&ndash;12).</strong> Verification and validation of systems with learned components, reliability and resilience, integrated risk management, cost/schedule/technical performance management, and certification.</li>
+        <li><strong>Part 3, Synthesis (weeks 13&ndash;15).</strong> Human-systems integration and the limits of automation, integration strategy and agentic AI workflows, and capstone presentations.</li>
+      </ul>
+
+      <h2>The complementarity framework</h2>
+      <p>The course closes on one lens for placing AI in an engineered system, and it maps directly onto FPGA design decisions:</p>
+      <dl>
+        <dt>Accelerator</dt>
+        <dd>AI drafts RTL, testbenches, or constraint files faster. The engineer remains the judge of correctness and the one accountable for what ships.</dd>
+
+        <dt>Explorer</dt>
+        <dd>AI searches architecture or place-and-route design spaces too large to enumerate by hand. The engineer sets the space and picks the operating point.</dd>
+
+        <dt>Pattern recognizer</dt>
+        <dd>An inference core on the fabric detects signatures below human perception &mdash; in sensor data, in timing anomalies. The engineer owns the detection design, the failure modes, and the response.</dd>
+      </dl>
+      <p>Allocate by mode, verify by evidence, certify by accountability.</p>
+
+      <h2>Where to start</h2>
+      <p>Start with the course overview deck, then the Part 1 foundations. The full lecture list, with a link to each deck, is on the <a href="/ai-augmented-se.html">course page</a>. For a mapping of these lectures onto a standard graduate systems-engineering curriculum, see <a href="/curriculum-fit.html">where the course fits</a>.</p>
+
+    </article>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="site-footer__inner">
+    <p class="site-footer__contact">Contact: <a href="mailto:contact@fpgapa.org">contact@fpgapa.org</a></p>
+    <p>Code: <a href="https://github.com/fpga-professional-association/fpgapa_website/blob/main/LICENSE">MIT</a>. Content: <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. <a href="https://github.com/fpga-professional-association/fpgapa_website">Source on GitHub</a>.</p>
+  </div>
+</footer>
+
+</body>
+</html>

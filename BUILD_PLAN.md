@@ -127,6 +127,8 @@ Five pages. No more.
 
 Header navigation appears on every page. Same five links, same order, no dropdown menus.
 
+Since v1: `ai-augmented-se.html`, `curriculum-fit.html`, and `blog.html` (plus posts under `blog/`) shipped as maintainer-approved additions. Header navigation now also links to Blog (see §15 on the blog decision).
+
 ---
 
 ## 6. Design System
@@ -416,7 +418,6 @@ These are real ideas that should not be built now.
 - Member directory
 - Job board
 - Event calendar
-- Blog / news section (Jekyll migration when this lands)
 - Search
 - Translations
 - RSS feed
@@ -426,6 +427,8 @@ These are real ideas that should not be built now.
 - Member spotlight pages
 
 Each of these earns its own plan document when its time comes. Do not anticipate them in the v1 architecture.
+
+**Blog, resolved:** this plan originally deferred the blog to a future Jekyll migration. The maintainer approved shipping it earlier instead, as static HTML pages under `blog.html` / `blog/`, with no build step, consistent with the rest of the site. A Jekyll migration remains possible later if post volume outgrows hand-written HTML.
 
 ---
 

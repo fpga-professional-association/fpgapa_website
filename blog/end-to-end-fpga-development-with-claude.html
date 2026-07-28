@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FPGA development with Claude &mdash; FPGA Professional Association</title>
+  <meta name="description" content="Case study: an AI coding agent took an FPGA project from empty repository to measured neural-network inference on a $129 Agilex 3 board in eight days. The repository conventions that made it work.">
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+  <link rel="stylesheet" href="/styles.css">
+  <meta property="og:title" content="End-to-end FPGA development with Claude">
+  <meta property="og:description" content="From empty repository to measured neural-network inference on a $129 FPGA board in eight days, and the repository conventions that made it work.">
+  <meta property="og:type" content="article">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<header class="site-header">
+  <div class="site-header__inner">
+    <a class="site-header__brand" href="/">FPGA PA</a>
+    <nav class="site-nav" aria-label="Main">
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/about.html">About</a></li>
+        <li><a href="/resources.html">Resources</a></li>
+        <li><a href="/tools.html">Tools</a></li>
+        <li><a href="/blog.html" aria-current="page">Blog</a></li>
+        <li><a href="/contribute.html">Contribute</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main id="main" class="site-main">
+  <div class="container">
+    <article>
+
+      <p class="small"><a href="/blog.html">Blog</a> &rsaquo; End-to-end FPGA development with Claude</p>
+
+      <h1>End-to-end FPGA development with Claude</h1>
+      <p class="lead">In July 2026 an AI coding agent &mdash; Anthropic&rsquo;s Claude Code &mdash; took an association project from empty repository to measured neural-network inference on field-programmable gate array (FPGA) silicon in eight days. The agent wrote the plan documents, the register-transfer-level (RTL) code, the testbenches, the build scripts, and the debug drivers; ran the vendor toolchain; programmed the board; and diagnosed a silicon-level memory defect. One engineer supplied the hardware, the review, and the direction. This post documents the repository conventions that made an agent productive on real hardware, with a link to every measured number. The full project is public: <a href="https://github.com/fpga-professional-association/agilex_3_ai_benchmarks">agilex_3_ai_benchmarks</a>.</p>
+      <p class="small">Published 2026-07-28.</p>
+
+      <h2>The result</h2>
+      <p>The project goal: run MLPerf Tiny inference workloads on the Arrow AXC3000, a $129 board carrying an Altera Agilex&nbsp;3 <code>A3CY100BM16AE7S</code> &mdash; a part with no hard processor system and no DDR memory, only a 16&nbsp;MB HyperRAM on an 8-bit bus. The repository&rsquo;s first commit landed 2026-07-03. The board arrived 2026-07-09. The first measured on-silicon inference &mdash; correct, input-dependent compute, verified against a software reference &mdash; is dated 2026-07-11. In between: 41 issues, 30 pull requests, and a plan that survived contact with the toolchain only after two major revisions.</p>
+
+      <table>
+        <thead>
+          <tr><th>Measured quantity</th><th>Value</th><th>Record</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>resnet8-cifar10 INT8 top-1 accuracy, 100 CIFAR-10 test images (software reference: 86.64&nbsp;%)</td>
+            <td>86.0&nbsp;%</td>
+            <td><a href="https://github.com/fpga-professional-association/agilex_3_ai_benchmarks/blob/main/results/ph3_resnet8-cifar10-hyperram-onboard_20260711.json">result JSON</a></td>
+          </tr>
+          <tr>
+            <td>CoreDLA engine throughput at a measured 200.0&nbsp;MHz compute clock</td>
+            <td>409.3 frames/s</td>
+            <td><a href="https://github.com/fpga-professional-association/agilex_3_ai_benchmarks/blob/main/results/ph3_resnet8-cifar10-hyperram-onboard_20260711.json">result JSON</a></td>
+          </tr>
+          <tr>
+            <td>HyperRAM sustained write bandwidth, 768-word bursts, 175&nbsp;MHz clock, double data rate (DDR)</td>
+            <td>342&nbsp;MB/s</td>
+            <td><a href="https://github.com/fpga-professional-association/agilex_3_ai_benchmarks/blob/main/results/ph3_hyperbus_bw_len0768_20260709.json">result JSON</a></td>
+          </tr>
+          <tr>
+            <td>On-chip M20K aggregate bandwidth, banked, output registers enabled, 300&nbsp;MHz</td>
+            <td>38.4&nbsp;GB/s (100&nbsp;% of theoretical)</td>
+            <td><a href="https://github.com/fpga-professional-association/agilex_3_ai_benchmarks/blob/main/results/l2_m20k_bw_banked_outreg_20260709.json">result JSON</a></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>Honest caveats, straight from the <a href="https://github.com/fpga-professional-association/agilex_3_ai_benchmarks#readme">project README</a>: 409&nbsp;frames/s is the inference engine&rsquo;s own rate, measured from its on-chip cycle counters; end-to-end system throughput is currently bounded near 12&nbsp;frames/s by a Joint Test Action Group (JTAG) input path that remains from bring-up. And a parallel bring-up track that removed the external memory entirely is still blocked at a compute-stage failure, with its findings committed rather than buried. Both limitations are stated in the repository in the same place as the headline numbers.</p>
+
+      <h2>The repository is the interface</h2>
+      <p>The engineer never pasted design context into a chat window. Everything the agent needed to know lives in the repository, in three documents that were written before any RTL.</p>
+      <p><strong>A canonical numbers document.</strong> <a href="https://github.com/fpga-professional-association/agilex_3_ai_benchmarks/blob/main/docs/PLAN.md"><code>docs/PLAN.md</code></a> holds every silicon budget, memory-wall estimate, and derating assumption, each with its provenance. The working rule is one sentence: never invent a number; cite the PLAN section instead. When the agent later found one of those numbers wrong &mdash; a HyperRAM bank voltage &mdash; it corrected the document with the versioned source cited and the discrepancy flagged in the pull request, because the conventions file requires exactly that.</p>
+      <p><strong>A conventions file.</strong> <a href="https://github.com/fpga-professional-association/agilex_3_ai_benchmarks/blob/main/AGENTS.md"><code>AGENTS.md</code></a> encodes the discipline gates: SystemVerilog-2017, one module per file; reset-less datapath registers with synchronous reset only on architectural state, per the device&rsquo;s retiming guidance; clock-domain crossings only through shared wrappers; Avalon signal naming; Python tools as deterministic, seeded, argparse command-line programs with pytest tests. None of this is agent-specific &mdash; it is the same conventions document a new human hire would get, written down instead of transmitted by folklore.</p>
+      <p><strong>An issue roadmap.</strong> The work was cut into self-contained GitHub issues with explicit dependencies, and the flow is mechanical: one issue, one branch, one pull request, and the pull request must walk every acceptance criterion and state how it was verified. The rule that carries the most weight is quoted here in full: &ldquo;Never mark a checkbox you did not verify. &lsquo;It should work&rsquo; is not verification.&rdquo; When a criterion needs the physical board, the agent implements up to that point, checks off only what it proved, and lists the remainder under a &ldquo;Hardware handoff&rdquo; heading for the engineer.</p>
+
+      <h2>Estimates never masquerade as measurements</h2>
+      <p>The failure mode everyone fears from a language model is the confident invented number. The project&rsquo;s defense is structural, not hopeful. Every number lands as a JSON file conforming to a <a href="https://github.com/fpga-professional-association/agilex_3_ai_benchmarks/blob/main/results/schema/result.schema.json">results schema</a> that makes the configuration fields mandatory &mdash; the plan&rsquo;s phrasing is &ldquo;numbers without configs are noise&rdquo; &mdash; and forces a declared <code>kind</code>: estimate or measured. An estimate may never overwrite a measurement. The discipline shows in the artifacts: the <a href="https://github.com/fpga-professional-association/agilex_3_ai_benchmarks/blob/main/results/reports/l1_curve.md">clock-frequency sweep report</a> opens by declaring that every one of its numbers is an Altera Quartus Prime timing estimate, worst corner, not a silicon measurement. The agent maintained that boundary for eight days because the schema, the review, and the conventions file all enforce it independently.</p>
+
+      <h2>Microbenchmarks changed the plan twice</h2>
+      <p>The original plan assumed custom RTL could reach the Agilex&nbsp;3 digital signal processing (DSP) block&rsquo;s tensor mode &mdash; 20 INT8 multiply-accumulates per block per cycle. The first microbenchmark, two days in, disproved it: Quartus Prime Pro 26.1 does not expose tensor mode to hand-written RTL or the IP catalog on this family; the capability is reachable only through the FPGA AI Suite compiler&rsquo;s internal path. This is a <a href="https://github.com/fpga-professional-association/agilex_3_ai_benchmarks/blob/main/docs/PLAN.md">toolchain restriction, not a silicon limit</a>, and it invalidated the hand-rolled-accelerator track in an afternoon. A follow-up sweep quantified the honest custom-RTL ceiling of the naive design that assumption had produced &mdash; a clock plateau near 50&nbsp;MHz &mdash; and the project pivoted to the vendor&rsquo;s CoreDLA inference IP, which is how tensor mode actually got used.</p>
+      <p>The pattern to copy is not the specific finding. It is that the agent built the smallest experiment that could disprove the plan, ran it before any dependent work existed, and recorded the negative result in the canonical document with a note to re-check on future tool releases. Engineers know this discipline; agents make it cheap enough to practice consistently.</p>
+
+      <h2>Hardware in the loop</h2>
+      <p>The board sat on the engineer&rsquo;s desk, forwarded into the agent&rsquo;s Linux environment over USB passthrough, with the vendor programmer running in a container. From there the agent programmed bitstreams and drove on-chip debug over JTAG without a human in the loop &mdash; JTAG strictly as control plane, never as the data plane of anything performance-measured. The unglamorous findings got written down too: this cable configures reliably at a 6&nbsp;MHz JTAG clock while 15&nbsp;MHz fails silently, a detail that would otherwise cost the next session an hour.</p>
+      <p>Because several agent sessions ran in parallel on different tracks, the repository carries a <a href="https://github.com/fpga-professional-association/agilex_3_ai_benchmarks/blob/main/scripts/devkit_lock.sh">file-based board lock</a> that any on-hardware work must hold &mdash; mutual exclusion for a shared devkit, the same way a team of humans would schedule lab time. The cadence this enabled: the board arrived 2026-07-09, and the HyperRAM and on-chip memory bandwidth measurements in the table above are dated the same day.</p>
+
+      <h2>Debugging silicon</h2>
+      <p>The first full inference attempt hung. The agent&rsquo;s diagnosis, driven through on-chip capture and scripted write-shape experiments, isolated a memory-path defect: the HyperRAM controller&rsquo;s double data rate input/output (DDIO) write path corrupts any 32-byte beat that is written more than once, so the per-word host writes that load configuration and weights arrived corrupt. The workaround is a write-combiner in the agent-written <a href="https://github.com/fpga-professional-association/agilex_3_ai_benchmarks/blob/main/rtl/hyperbus/axi4_hbmc_bridge.sv">AXI4-to-HyperBus bridge</a> that gathers partial writes into one full-strobe beat, making the load bit-exact; the root cause traced to a missing eye-centering delay on the HyperBus clock pin and is tracked for a proper fix.</p>
+      <p>One residual risk is documented rather than waved off: the pad-launch timing on this path is calibrated per fit and is not covered by the timing constraints, so a rebuild can pass static timing analysis and still be marginal on silicon. The project&rsquo;s answer is a scripted write-shape regression run on the board after every rebuild. That is the correct engineering response to an unconstrained interface, and the agent both identified the gap and automated the mitigation.</p>
+
+      <h2>Division of labor</h2>
+      <p>The human contribution was small in hours and decisive in kind: buy the board, plug it in, power-cycle it on request, decide scope and spend, and review every pull request as sole approver. The agent produced everything expressible as text &mdash; RTL, testbenches, timing constraints, Tcl drivers, Python tooling, result records, documentation, and the analysis connecting them. The boundary was never fuzzy, because the conventions file draws it explicitly: hardware-gated steps are handed off, never simulated into a checked box.</p>
+
+      <h2>What transfers to your project</h2>
+      <p>None of the following requires this board, this vendor, or this agent.</p>
+      <ul>
+        <li>A canonical numbers document the agent must cite instead of inventing, corrected loudly when wrong.</li>
+        <li>A conventions file holding the discipline gates: reset style, bus naming, testbench requirements, tool versions.</li>
+        <li>Work cut into self-contained issues with dependencies; one issue, one branch, one pull request that walks its acceptance criteria.</li>
+        <li>A results schema that separates estimate from measured and makes configuration mandatory.</li>
+        <li>The checkbox rule: nothing gets marked verified that was not verified; hardware-gated work is handed off.</li>
+        <li>A lock protocol when more than one session touches shared hardware.</li>
+      </ul>
+      <p>These are systems-engineering controls, not prompt tricks &mdash; specification, configuration management, and verification evidence, applied to a collaborator that types faster than it should be trusted. That framing is developed at length in the association&rsquo;s <a href="/ai-augmented-se.html">AI-Augmented Systems Engineering course</a> and the earlier post on <a href="/blog/ai-augmented-systems-engineering.html">systems engineering for FPGA design in the age of AI</a>. The repository itself is the fullest documentation: <a href="https://github.com/fpga-professional-association/agilex_3_ai_benchmarks">agilex_3_ai_benchmarks</a>, every number traceable to a JSON record with its configuration attached.</p>
+
+    </article>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="site-footer__inner">
+    <p class="site-footer__contact">Contact: <a href="mailto:contact@fpgapa.org">contact@fpgapa.org</a></p>
+    <p>Code: <a href="https://github.com/fpga-professional-association/fpgapa_website/blob/main/LICENSE">MIT</a>. Content: <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. <a href="https://github.com/fpga-professional-association/fpgapa_website">Source on GitHub</a>.</p>
+  </div>
+</footer>
+
+</body>
+</html>

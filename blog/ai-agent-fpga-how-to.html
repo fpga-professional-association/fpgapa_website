@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Run an AI agent on FPGA work &mdash; FPGA Professional Association</title>
+  <meta name="description" content="How to set up a repository so an AI coding agent can do real FPGA work — seven setup steps, a workflow diagram, and an honest ladder of the complexity levels this has been demonstrated at.">
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+  <link rel="stylesheet" href="/styles.css">
+  <meta property="og:title" content="How to run an AI agent on FPGA work">
+  <meta property="og:description" content="Seven setup steps, a workflow diagram, and an honest ladder of the FPGA complexity levels demonstrated so far.">
+  <meta property="og:type" content="article">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<header class="site-header">
+  <div class="site-header__inner">
+    <a class="site-header__brand" href="/">FPGA PA</a>
+    <nav class="site-nav" aria-label="Main">
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/about.html">About</a></li>
+        <li><a href="/resources.html">Resources</a></li>
+        <li><a href="/tools.html">Tools</a></li>
+        <li><a href="/blog.html" aria-current="page">Blog</a></li>
+        <li><a href="/contribute.html">Contribute</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main id="main" class="site-main">
+  <div class="container">
+    <article>
+
+      <p class="small"><a href="/blog.html">Blog</a> &rsaquo; How to run an AI agent on FPGA work</p>
+
+      <h1>How to run an AI agent on FPGA work</h1>
+      <p class="lead">The practical companion to the <a href="/blog/end-to-end-fpga-development-with-claude.html">case study</a>: what to set up before pointing an artificial intelligence (AI) coding agent at a field-programmable gate array (FPGA) project, how the working loop fits together, and &mdash; the question every reader asks first &mdash; the level of design complexity this approach has actually been demonstrated at. Every claim below traces to the public <a href="https://github.com/fpga-professional-association/agilex_3_ai_benchmarks">agilex_3_ai_benchmarks</a> repository.</p>
+      <p class="small">Published 2026-07-28.</p>
+
+      <h2>The working loop</h2>
+      <p>The engineer and the agent never share a screen. They share a repository, and the repository carries the contract: the canonical numbers, the conventions, the issue roadmap, and the schema every result must satisfy. The agent drives the toolchain and the board through scripts; the engineer reviews, merges, and provides the physical hands.</p>
+
+      <svg viewBox="0 0 720 470" role="img" aria-labelledby="loop-title loop-desc">
+        <title id="loop-title">The agent workflow loop</title>
+        <desc id="loop-desc">The engineer reviews and merges into a repository holding the plan, conventions, issues, and results schema. The repository hands issues and discipline gates to the agent. The agent returns pull requests and result JSON files, drives the scripted toolchain, and programs and measures the board over JTAG. The engineer performs physical actions on the board directly.</desc>
+        <defs>
+          <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--color-accent)"/>
+          </marker>
+        </defs>
+
+        <!-- Engineer -->
+        <rect x="220" y="16" width="280" height="64" rx="4" fill="var(--color-code-bg)" stroke="var(--color-border)"/>
+        <text x="360" y="42" text-anchor="middle" font-size="14" font-weight="600" fill="var(--color-fg)">Engineer</text>
+        <text x="360" y="62" text-anchor="middle" font-size="11.5" fill="var(--color-fg-muted)">scope &#183; review &#183; physical hands</text>
+
+        <!-- Repository -->
+        <rect x="220" y="146" width="280" height="76" rx="4" fill="var(--color-code-bg)" stroke="var(--color-accent)"/>
+        <text x="360" y="172" text-anchor="middle" font-size="14" font-weight="600" fill="var(--color-fg)">Repository &#8212; the contract</text>
+        <text x="360" y="190" text-anchor="middle" font-size="11.5" fill="var(--color-fg-muted)">PLAN.md &#183; AGENTS.md &#183; issues</text>
+        <text x="360" y="206" text-anchor="middle" font-size="11.5" fill="var(--color-fg-muted)">results schema &#183; board lock</text>
+
+        <!-- Agent -->
+        <rect x="220" y="288" width="280" height="64" rx="4" fill="var(--color-code-bg)" stroke="var(--color-border)"/>
+        <text x="360" y="314" text-anchor="middle" font-size="14" font-weight="600" fill="var(--color-fg)">Agent (Claude Code)</text>
+        <text x="360" y="334" text-anchor="middle" font-size="11.5" fill="var(--color-fg-muted)">RTL &#183; testbenches &#183; scripts &#183; debug</text>
+
+        <!-- Toolchain -->
+        <rect x="40" y="400" width="290" height="58" rx="4" fill="var(--color-code-bg)" stroke="var(--color-border)"/>
+        <text x="185" y="424" text-anchor="middle" font-size="13" font-weight="600" fill="var(--color-fg)">Scripted toolchain</text>
+        <text x="185" y="442" text-anchor="middle" font-size="11.5" fill="var(--color-fg-muted)">Verilator &#183; Quartus Prime, CLI flows only</text>
+
+        <!-- Board -->
+        <rect x="390" y="400" width="290" height="58" rx="4" fill="var(--color-code-bg)" stroke="var(--color-border)"/>
+        <text x="535" y="424" text-anchor="middle" font-size="13" font-weight="600" fill="var(--color-fg)">Board</text>
+        <text x="535" y="442" text-anchor="middle" font-size="11.5" fill="var(--color-fg-muted)">JTAG control plane &#183; devkit lock</text>
+
+        <!-- Engineer -> Repository -->
+        <line x1="360" y1="80" x2="360" y2="144" stroke="var(--color-accent)" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <text x="372" y="106" font-size="11" fill="var(--color-fg-muted)">writes plan &amp; conventions,</text>
+        <text x="372" y="121" font-size="11" fill="var(--color-fg-muted)">reviews &amp; merges every PR</text>
+
+        <!-- Repository -> Agent -->
+        <line x1="360" y1="222" x2="360" y2="286" stroke="var(--color-accent)" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <text x="372" y="248" font-size="11" fill="var(--color-fg-muted)">self-contained issues,</text>
+        <text x="372" y="263" font-size="11" fill="var(--color-fg-muted)">discipline gates</text>
+
+        <!-- Agent -> Repository (return, left side) -->
+        <polyline points="220,320 150,320 150,184 216,184" fill="none" stroke="var(--color-accent)" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <text x="142" y="246" text-anchor="end" font-size="11" fill="var(--color-fg-muted)">pull requests,</text>
+        <text x="142" y="261" text-anchor="end" font-size="11" fill="var(--color-fg-muted)">result JSONs</text>
+
+        <!-- Agent -> Toolchain -->
+        <line x1="300" y1="352" x2="230" y2="398" stroke="var(--color-accent)" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <text x="240" y="372" text-anchor="end" font-size="11" fill="var(--color-fg-muted)">builds &amp; sims</text>
+
+        <!-- Agent -> Board -->
+        <line x1="420" y1="352" x2="490" y2="398" stroke="var(--color-accent)" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <text x="482" y="372" font-size="11" fill="var(--color-fg-muted)">program, measure, capture</text>
+
+        <!-- Engineer -> Board (physical, dashed, right side) -->
+        <polyline points="500,48 700,48 700,429 684,429" fill="none" stroke="var(--color-fg-muted)" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrow)"/>
+        <text x="694" y="240" text-anchor="end" font-size="11" fill="var(--color-fg-muted)">physical actions</text>
+      </svg>
+
+      <h2>Setup, in seven steps</h2>
+      <ol>
+        <li><strong>Write the numbers down first.</strong> Before any RTL, create a canonical numbers document &mdash; silicon budgets, memory walls, derating assumptions, each with provenance. The agent&rsquo;s standing rule is one sentence: never invent a number; cite the document. The case study&rsquo;s version is <a href="https://github.com/fpga-professional-association/agilex_3_ai_benchmarks/blob/main/docs/PLAN.md"><code>docs/PLAN.md</code></a>.</li>
+        <li><strong>Encode the discipline in a conventions file.</strong> Reset style, clock-domain-crossing policy, bus naming, testbench requirements, tool versions, and the honesty rules: estimates are labeled estimates, and no checkbox gets marked that was not verified. See <a href="https://github.com/fpga-professional-association/agilex_3_ai_benchmarks/blob/main/AGENTS.md"><code>AGENTS.md</code></a>. This is the same document a new human hire should get; writing it for an agent forces it to exist.</li>
+        <li><strong>Cut the work into self-contained issues.</strong> Each issue states its acceptance criteria and dependencies. One issue, one branch, one pull request, and the pull request walks every criterion with evidence. Small units keep review tractable and failures cheap.</li>
+        <li><strong>Make every claim machine-checkable.</strong> Self-checking testbenches (Verilator runs anywhere the agent runs), pytest for tooling, and a results schema that makes configuration fields mandatory and separates <code>estimate</code> from <code>measured</code>. The agent cannot fabricate what the schema and the testbench refuse to accept.</li>
+        <li><strong>Script the vendor flow end to end.</strong> Every project rebuilds from one command-line invocation; no state lives only in a graphical interface. This is what lets the agent iterate on synthesis, fitting, and timing unattended &mdash; and what makes every result reproducible by anyone.</li>
+        <li><strong>Forward the hardware.</strong> A board on a desk becomes agent-reachable with USB passthrough and a containerized vendor programmer; the Joint Test Action Group (JTAG) port is the control plane. If more than one session touches the board, add a lock file protocol &mdash; the case study&rsquo;s is <a href="https://github.com/fpga-professional-association/agilex_3_ai_benchmarks/blob/main/scripts/devkit_lock.sh">about a hundred lines of shell</a>.</li>
+        <li><strong>Define the handoff and hold the review.</strong> Steps that need physical hands &mdash; plugging, power-cycling, probing &mdash; are listed by the agent under a &ldquo;Hardware handoff&rdquo; heading, never simulated into a checked box. The engineer stays sole approver on every merge.</li>
+      </ol>
+
+      <h2>What level of FPGA complexity this works at</h2>
+      <p>The honest answer is a ladder, with a demonstrated rung and an undemonstrated one. The case-study project sits well above tutorial scale: a 100K logic-element Agilex&nbsp;3 filled to <a href="https://github.com/fpga-professional-association/agilex_3_ai_benchmarks#readme">97&nbsp;% of logic and 87&nbsp;% of block memory</a>, a multi-clock design with an external double-data-rate memory interface, vendor AI inference IP, and custom bus-bridge RTL &mdash; mid-complexity professional work.</p>
+
+      <table>
+        <thead>
+          <tr><th>Level</th><th>What it looks like</th><th>Status in the case study</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1. Flow tooling</td>
+            <td>Build drivers, report parsers, result schemas, timing-report audits</td>
+            <td>Demonstrated; fully agent-verifiable without hardware</td>
+          </tr>
+          <tr>
+            <td>2. Simulation-verified RTL</td>
+            <td>Modules with self-checking testbenches: bus bridges, scoreboards, microbenchmark cores</td>
+            <td>Demonstrated; Verilator closes the loop on the agent&rsquo;s own machine</td>
+          </tr>
+          <tr>
+            <td>3. Full-chip integration and timing closure</td>
+            <td>Scripted system integration, timing constraints, multi-clock architecture, external-memory interface, near-full device utilization</td>
+            <td>Demonstrated; 97&nbsp;% logic utilization fit with a retuned clock plan</td>
+          </tr>
+          <tr>
+            <td>4. Board bring-up and silicon debug</td>
+            <td>JTAG bring-up, on-chip capture, isolating a silicon-level write-path defect, per-build on-silicon regression</td>
+            <td>Demonstrated, with human hands for physical steps only</td>
+          </tr>
+          <tr>
+            <td>5. Beyond</td>
+            <td>High-speed serial transceiver bring-up, multi-board systems, safety-certified flows, systems-on-chip at emulation scale</td>
+            <td>Not demonstrated; no claim made</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>The controlling variable is not device size. It is whether each layer of the work produces evidence a script can check: a simulation exit code, a fitter report, a timing summary, a register read from silicon. Wherever that holds, the agent climbs the ladder &mdash; including the least favorable case the project hit, an input/output timing defect that static analysis could not see, which the agent handled the way an engineer would: hypothesis-driven silicon experiments, a workaround in RTL, and a scripted on-board regression run after every rebuild. Where evidence needs an oscilloscope probe or a lab instrument the agent cannot drive, the work crosses into the handoff protocol, and the engineer&rsquo;s share grows.</p>
+      <p>Level&nbsp;5 is a statement about what has been shown, not about a ceiling. The association will move rungs up this ladder as projects demonstrate them, and invites <a href="/contribute.html">contributed reports</a> from teams running the same experiment at other scales.</p>
+
+      <h2>Further reading</h2>
+      <p>The <a href="/blog/end-to-end-fpga-development-with-claude.html">case study</a> narrates the eight days this method produced, number by number. The <a href="https://github.com/fpga-professional-association/agilex_3_ai_benchmarks">repository</a> is the primary source &mdash; plan, conventions, issues, and every measured result with its configuration attached. The systems-engineering framing behind the method is developed in the association&rsquo;s <a href="/ai-augmented-se.html">AI-Augmented Systems Engineering course</a>.</p>
+
+    </article>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="site-footer__inner">
+    <p class="site-footer__contact">Contact: <a href="mailto:contact@fpgapa.org">contact@fpgapa.org</a></p>
+    <p>Code: <a href="https://github.com/fpga-professional-association/fpgapa_website/blob/main/LICENSE">MIT</a>. Content: <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. <a href="https://github.com/fpga-professional-association/fpgapa_website">Source on GitHub</a>.</p>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -229,6 +229,17 @@ pre code {
   padding: 0;
 }
 
+blockquote {
+  margin: 0 0 var(--space-3);
+  padding-left: var(--space-3);
+  border-left: 3px solid var(--color-border);
+  color: var(--color-fg-muted);
+}
+
+blockquote p:last-child {
+  margin-bottom: 0;
+}
+
 /* Tables */
 
 table {

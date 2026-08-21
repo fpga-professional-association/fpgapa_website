@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Why FPGAs missed the AI boom &mdash; FPGA Professional Association</title>
+  <meta name="description" content="A post-mortem on why an industry built around programmable acceleration anticipated the AI boom correctly and captured little of it, and what AI engineering agents change.">
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+  <link rel="stylesheet" href="/styles.css">
+  <meta property="og:title" content="Why FPGAs missed the AI boom: a post-mortem">
+  <meta property="og:description" content="The FPGA was more programmable. The GPU was more programmable.">
+  <meta property="og:type" content="article">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<header class="site-header">
+  <div class="site-header__inner">
+    <a class="site-header__brand" href="/">FPGA PA</a>
+    <nav class="site-nav" aria-label="Main">
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/about.html">About</a></li>
+        <li><a href="/resources.html">Resources</a></li>
+        <li><a href="/tools.html">Tools</a></li>
+        <li><a href="/blog.html" aria-current="page">Blog</a></li>
+        <li><a href="/contribute.html">Contribute</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main id="main" class="site-main">
+  <div class="container">
+    <article>
+
+      <p class="small"><a href="/blog.html">Blog</a> &rsaquo; Why FPGAs missed the AI boom</p>
+
+      <h1>Why FPGAs missed the AI boom: a post-mortem</h1>
+      <p class="lead">The FPGA was more programmable. The GPU was more programmable.</p>
+      <p class="small">Published 2026-08-21.</p>
+
+      <p>There is a curious historical puzzle in the field-programmable gate array (FPGA) industry.</p>
+      <p>By the early 2010s, many of the ideas that now seem central to modern computing were already familiar to FPGA engineers. General-purpose processor performance could not continue scaling indefinitely. Important workloads would require specialized acceleration. Data centers would become heterogeneous. Algorithms would keep changing, making fixed-function application-specific integrated circuits (ASICs) undesirable for some applications. It therefore seemed reasonable that a reprogrammable accelerator sitting beside the central processing unit (CPU) might become an important part of the future data center.</p>
+      <p>This was not merely a theoretical argument.</p>
+      <p>Microsoft&rsquo;s Project Catapult began investigating FPGA acceleration for Bing around 2010. A 1,632-server scale pilot followed in 2012, and the 2014 paper describing it reported that the reconfigurable fabric improved per-server ranking throughput by 95% at a fixed latency distribution. Bing put the technology into production in early 2015, FPGA-enabled servers were subsequently deployed at scale across Bing and Azure, and the later Brainwave project demonstrated FPGA-based real-time neural-network inference.</p>
+      <p>So the basic hypothesis &mdash;</p>
+      <p><code>CPU + reconfigurable accelerator</code></p>
+      <p>&mdash; was not unreasonable. In fact, it worked.</p>
+      <p>Intel apparently saw a similar opportunity. In 2015 it agreed to acquire Altera for approximately $16.7 billion, explicitly planning to offer Altera FPGAs alongside Xeon processors as integrated data-center products. When the acquisition closed, Intel CEO Brian Krzanich named machine learning among the future applications the combination could enable.</p>
+      <p>Five years later, AMD announced its $35 billion acquisition of Xilinx. AMD&rsquo;s argument was broader, but remarkably similar in spirit: future computing would be heterogeneous, algorithms would continually evolve, and adaptive computing would complement CPUs and graphics processing units (GPUs) in accelerating those workloads.</p>
+      <p>Then the artificial intelligence (AI) computing boom actually arrived.</p>
+      <p>And the FPGA was not its principal beneficiary.</p>
+      <p>The GPU was.</p>
+      <p>This raises a useful question for FPGA engineers: how did an industry built around programmable acceleration anticipate so much of the future correctly, while capturing relatively little of the enormous AI accelerator market that followed?</p>
+      <p>Part of the answer comes from an ambiguity in the word <em>programmable</em>.</p>
+
+      <h2>Two notions of programmability</h2>
+      <p>Consider two machines.</p>
+      <p>The first machine has a fixed architecture but can execute a large class of programs:</p>
+      <p><code>P &rarr; I(P) &rarr; H</code></p>
+      <p>where P is the programmer&rsquo;s description, I(P) is a sequence of instructions or kernels, and H is a largely fixed hardware architecture.</p>
+      <p>A GPU is approximately such a machine.</p>
+      <p>The second machine allows the program to alter the architecture itself:</p>
+      <p><code>P &rarr; A(P) &rarr; C(P)</code></p>
+      <p>where A(P) is a hardware architecture constructed for the problem and C(P) is its physical configuration.</p>
+      <p>An FPGA is approximately this second machine.</p>
+      <p>From one perspective, the second machine is obviously more programmable. We can create arbitrary pipelines, memories, state machines, arithmetic structures, and interfaces.</p>
+      <p>But consider what happens when the user changes P.</p>
+      <p>For the first machine, we may need to compile another program.</p>
+      <p>For the second, we may need to construct another machine.</p>
+      <p>This suggests two different quantities that we might both informally call programmability: <em>architectural flexibility</em>, and <em>the cost of changing the computation</em>.</p>
+      <p>FPGAs are exceptional at the first.</p>
+      <p>GPUs turned out to be exceptional at the second.</p>
+      <p>For AI, the second quantity became enormously important.</p>
+
+      <h2>The abstraction problem</h2>
+      <p>Suppose we write</p>
+<pre><code>for (int i = 0; i &lt; N; i++)
+    c[i] = a[i] * b[i];</code></pre>
+      <p>On a conventional processor, this program leaves most architectural questions unanswered because the architecture has already been selected.</p>
+      <p>On an FPGA, these unanswered questions <em>are</em> the architecture.</p>
+      <p>Should there be one multiplier or 256? Should the loop be fully unrolled? What is the initiation interval? Where should the arrays reside? How should the memories be partitioned? How deep should the pipeline be? What clock frequency should we target? Will the resulting design route? Will it meet timing?</p>
+      <p>The difficulty encountered by FPGA OpenCL and high-level synthesis (HLS) systems was therefore somewhat deeper than translating C into register-transfer level (RTL) code.</p>
+      <p>They were attempting to map a software description onto a space of possible machines.</p>
+      <p>One can certainly automate parts of this search. Modern HLS tools do so.</p>
+      <p>But there is a tension.</p>
+      <p>If the compiler selects a sufficiently generic architecture so that software behaves predictably, much of the advantage of constructing custom hardware disappears.</p>
+      <p>If the compiler aggressively specializes the hardware, physical architecture once again matters.</p>
+      <p>Put somewhat provocatively:</p>
+      <blockquote><p>An FPGA made sufficiently easy to program risks becoming an inefficient processor implemented in programmable logic. An FPGA used to its full potential starts requiring hardware engineering again.</p></blockquote>
+      <p>This seems to have been a difficult circle to square.</p>
+
+      <h2>CUDA solved an easier problem &mdash; and perhaps the more important one</h2>
+      <p>There is another historical point worth emphasizing.</p>
+      <p>FPGA vendors did not actually possess the software-platform head start that one might initially assume.</p>
+      <p>NVIDIA introduced CUDA in 2006, presenting the GPU as a general-purpose parallel computing platform programmable from familiar languages, initially C. Altera and Xilinx later developed increasingly sophisticated higher-level programming environments for programmable logic, but they faced a fundamentally different compilation problem.</p>
+      <p>A CUDA compiler knows the broad shape of the machine on which its program will execute.</p>
+      <p>An FPGA compiler is partly responsible for creating that machine.</p>
+      <p>The distinction is easy to underestimate because both processes are called compilation.</p>
+      <p>But they are not computationally or conceptually equivalent.</p>
+      <p>In one case we approximately have</p>
+      <p><code>program &rarr; instructions</code>.</p>
+      <p>In the other,</p>
+      <p><code>program &rarr; microarchitecture &rarr; logic &rarr; placement &rarr; routing</code>.</p>
+      <p>This additional freedom is precisely why FPGAs are useful.</p>
+      <p>It is also precisely why they are difficult.</p>
+
+      <h2>AI then became unusually regular</h2>
+      <p>There is another part of the story.</p>
+      <p>Suppose future computing had become dominated by rapidly changing collections of irregular bit-level algorithms. The FPGA might have been exceptionally well positioned.</p>
+      <p>Instead, an enormous fraction of AI computation converged toward variations of a relatively regular primitive:</p>
+      <p><code>C = AB</code>.</p>
+      <p>There are, of course, many complications surrounding this operation &mdash; attention, normalization, activation functions, sparsity, communication, quantization, memory movement, mixture-of-experts routing, and so forth. Nevertheless, very large quantities of the computational work eventually reduced to dense or structured matrix operations.</p>
+      <p>This creates another curious question.</p>
+      <p>If we know that thousands of multipliers will spend most of their useful lives performing matrix operations, why should we repeatedly construct the interconnect between those multipliers out of programmable routing?</p>
+      <p>At some point it becomes attractive to harden the structure.</p>
+      <p>This is approximately what happened.</p>
+      <p>NVIDIA added Tensor Cores.</p>
+      <p>Google constructed tensor processing units (TPUs) around systolic matrix engines.</p>
+      <p>AMD GPUs acquired increasingly capable matrix hardware.</p>
+      <p>And, interestingly, Xilinx itself moved in this direction.</p>
+
+      <h2>Versal is an interesting admission</h2>
+      <p>The architecture of Versal is revealing.</p>
+      <p>A traditional FPGA provides programmable logic, digital signal processing (DSP) blocks, memories, and routing from which one can construct an accelerator. Versal added AI Engines: arrays of specialized vector/very-long-instruction-word (VLIW) processors with local memories and dedicated interconnect.</p>
+      <p>Thus the architecture moved from something resembling</p>
+      <p><code>programmable fabric</code></p>
+      <p>toward</p>
+      <p><code>programmable fabric + specialized processors + network-on-chip + CPU subsystem</code>.</p>
+      <p>This should not be viewed as abandoning the FPGA idea. Quite the opposite: it is a sensible response to the observation that different types of programmability are appropriate at different levels.</p>
+      <p>But it does suggest something important.</p>
+      <p>For sufficiently regular computation, configuring individual lookup tables (LUTs) and programmable routes is often not the most economical level of abstraction.</p>
+      <p>The irony is that the FPGA industry&rsquo;s own architectural evolution eventually rediscovered the same compromise that made GPUs effective:</p>
+      <blockquote><p>Retain programmability, but harden the structures whose regularity has become predictable.</p></blockquote>
+
+      <h2>The memory problem</h2>
+      <p>There is a similar argument for memory.</p>
+      <p>An FPGA is particularly attractive when a computation can be organized as a stream:</p>
+      <p><code>x &rarr; f1 &rarr; f2 &rarr; f3 &rarr; y</code>.</p>
+      <p>A carefully designed FPGA can keep data moving through a custom pipeline with very little unnecessary storage or instruction overhead. Many signal-processing applications have exactly this form.</p>
+      <p>Large AI models increasingly do not.</p>
+      <p>A large model may require repeatedly moving billions of parameters between high-bandwidth memory (HBM) and arithmetic units. Once the problem becomes dominated by enormous matrix operations and enormous memory movement, the optimal machine begins looking rather different.</p>
+      <p>The flexibility of an FPGA&rsquo;s programmable routing has real silicon cost. Configuration memory has cost. General LUT structures have cost.</p>
+      <p>Those resources are extremely valuable when the computation requires them.</p>
+      <p>They are less obviously valuable when the dominant task is moving tensors from HBM into a large collection of matrix multipliers.</p>
+      <p>Thus the question is not whether an FPGA <em>can</em> perform the computation. Clearly it can.</p>
+      <p>The question is what fraction of the silicon budget must be devoted to flexibility that the workload does not presently require.</p>
+
+      <h2>The iteration-time problem</h2>
+      <p>There is also a human timescale to consider.</p>
+      <p>Suppose a machine-learning researcher modifies an algorithm.</p>
+      <p>On a GPU the experimental loop might look approximately like</p>
+      <p><code>modify &rarr; compile &rarr; run &rarr; measure</code>.</p>
+      <p>An FPGA implementation can introduce another loop:</p>
+      <p><code>modify &rarr; generate architecture &rarr; synthesize &rarr; place &rarr; route &rarr; check timing &rarr; run &rarr; measure</code>.</p>
+      <p>For a production hardware design, this is entirely reasonable.</p>
+      <p>For a researcher performing dozens of experiments, it is a severe disadvantage.</p>
+      <p>And AI happened to develop through unusually rapid empirical iteration. Architectures changed. Numerical formats changed. Training methods changed. Attention mechanisms changed. Model sizes changed by orders of magnitude.</p>
+      <p>In this environment, the ability to reconfigure hardware was useful, but the ability <em>not to have to reconfigure the hardware at all</em> was often more useful.</p>
+      <p>This is the paradox.</p>
+      <p>The FPGA was more flexible in hardware.</p>
+      <p>The GPU was more flexible in practice.</p>
+
+      <h2>Microsoft provides an important counterexample</h2>
+      <p>One should be careful not to conclude from this that FPGA acceleration failed technically.</p>
+      <p>Microsoft demonstrated almost the opposite.</p>
+      <p>Project Catapult put FPGAs into production for Bing and Azure, and Brainwave demonstrated impressive low-latency neural-network inference. Microsoft describes FPGA-enabled servers deployed at data-center scale, and later used FPGAs for networking as well as computation.</p>
+      <p>But notice the economic setting.</p>
+      <p>Microsoft possessed enormous workloads, specialized hardware teams, control of its own data centers, millions of servers over which engineering costs could be amortized, and workloads valuable enough to justify specialized acceleration.</p>
+      <p>This is closer to ASIC economics with reconfigurable hardware than to general-purpose software development.</p>
+      <p>Microsoft&rsquo;s success therefore establishes an important result:</p>
+      <blockquote><p>FPGAs can be excellent data-center accelerators when the value of specialization exceeds the engineering cost of specialization.</p></blockquote>
+      <p>It does not establish the stronger result:</p>
+      <blockquote><p>FPGAs are the best general-purpose platform on which arbitrary AI developers should run arbitrary models.</p></blockquote>
+      <p>These are quite different propositions.</p>
+
+      <h2>Training may have determined inference</h2>
+      <p>There is also a network effect.</p>
+      <p>Modern AI models were overwhelmingly developed and trained on GPUs.</p>
+      <p>Consequently the researcher already had</p>
+      <p><code>PyTorch &rarr; GPU libraries &rarr; CUDA &rarr; GPU</code>.</p>
+      <p>The model was tested there. The kernels were optimized there. The profiling tools worked there. The distributed-computing infrastructure existed there. The engineers understood the system.</p>
+      <p>Once this ecosystem existed, moving inference to another architecture had to produce enough benefit to compensate for leaving it.</p>
+      <p>Thus training may have selected the inference platform indirectly.</p>
+      <p>This is a useful reminder that hardware competitions are not always decided by hardware.</p>
+
+      <h2>Intel may therefore have been more right than wrong</h2>
+      <p>This also reframes Intel&rsquo;s acquisition of Altera.</p>
+      <p>Intel predicted that CPU-only computing would become insufficient. Correct.</p>
+      <p>It expected data centers to become heterogeneous. Correct.</p>
+      <p>It expected machine learning to become an important workload. Correct.</p>
+      <p>It believed specialized accelerators would become increasingly important as conventional processor scaling slowed. Again, correct.</p>
+      <p>The questionable assumption was more specific:</p>
+      <p><code>changing workload &rArr; value of hardware reconfiguration</code>.</p>
+      <p>What actually happened was closer to</p>
+      <p><code>changing workload &rArr; value of software programmability on top of specialized hardware</code>.</p>
+      <p>That is a much subtler forecasting error.</p>
+      <p>Intel correctly anticipated the problem and even the broad class of solution. It appears to have selected the wrong level of programmability at which to attack it.</p>
+      <p>AMD&rsquo;s later Xilinx acquisition was more diversified. AMD explicitly described the combined portfolio as CPUs, GPUs, FPGAs, and adaptive SoCs rather than betting on programmable logic alone.</p>
+      <p>In retrospect, that distinction seems rather important.</p>
+
+      <h2>A simple model</h2>
+      <p>We might summarize the issue with an intentionally crude objective function.</p>
+      <p>Suppose the practical value of an accelerator is approximately</p>
+      <p><code>V = (P &times; E &times; D &times; S) / C</code></p>
+      <p>where P is computational performance, E is energy efficiency, D is developer productivity, S is ecosystem and deployment scale, and C is total cost.</p>
+      <p>FPGA discussions have traditionally emphasized P and E. And for many workloads they can be excellent.</p>
+      <p>But NVIDIA spent more than a decade increasing D and S. Eventually those terms became enormous.</p>
+      <p>CUDA&rsquo;s greatest achievement may therefore not be that programmers can write CUDA kernels.</p>
+      <p>It may be that most AI programmers do not have to.</p>
+      <p>They write PyTorch.</p>
+      <p>The specialized hardware disappears beneath layers of software.</p>
+      <p>This is a considerably stronger abstraction than hiding RTL.</p>
+
+      <h2>There may now be a new variable</h2>
+      <p>There is, however, an interesting reason to revisit this history.</p>
+      <p>The cost of hardware engineering may itself be changing.</p>
+      <p>Historically, exploiting an FPGA efficiently required a human to manage much of the mapping</p>
+      <p><code>intent &rarr; architecture &rarr; RTL/HLS &rarr; verification &rarr; implementation &rarr; timing closure</code>.</p>
+      <p>HLS attempted to automate one portion of this transformation. It never completely removed the architectural problem.</p>
+      <p>Modern AI agents potentially attack the problem differently.</p>
+      <p>Rather than demanding that a single compiler infer the optimal hardware architecture from a C program, an agent can in principle participate in an iterative engineering loop:</p>
+      <p><code>specification &rarr; candidate architecture &rarr; simulation &rarr; synthesis &rarr; timing report &rarr; modified architecture &rarr; &hellip;</code></p>
+      <p>The distinction is important.</p>
+      <p>An HLS compiler largely performs a transformation.</p>
+      <p>An engineering agent can perform a search.</p>
+      <p>It can generate an implementation, observe the result, modify the architecture, run the tools again, inspect failures, create tests, and repeat.</p>
+      <p>This begins to resemble what FPGA engineers already do.</p>
+      <p>The interesting question is therefore not necessarily whether AI can write RTL. That is probably the least interesting part.</p>
+      <p>The question is whether AI can substantially reduce the engineering cost of obtaining specialized hardware.</p>
+      <p>If that quantity falls by one or two orders of magnitude, some old economic assumptions about programmable logic deserve to be reconsidered.</p>
+
+      <h2>Perhaps the FPGA was waiting for the wrong abstraction</h2>
+      <p>For roughly fifteen years the FPGA industry attempted to move upward toward software developers:</p>
+      <p><code>RTL &rarr; HLS &rarr; OpenCL &rarr; software developer</code>.</p>
+      <p>Perhaps this was the wrong direction in which to remove complexity.</p>
+      <p>The goal was to make hardware design resemble software development. But hardware does not behave like software. Placement matters. Routing matters. Memory architecture matters. Clocking matters. Timing matters. Physical resources matter.</p>
+      <p>Pretending otherwise tends to sacrifice the properties that make an FPGA useful.</p>
+      <p>There is another possibility:</p>
+      <p><code>human specification &rarr; AI engineering agent &rarr; the actual hardware workflow</code>.</p>
+      <p>Here the hardware complexity is not removed.</p>
+      <p>It is absorbed by another engineering layer.</p>
+      <p>The agent can still reason about pipelines, block RAM (BRAM) banking, DSP utilization, clock-domain crossings, timing constraints, and placement.</p>
+      <p>The human does not necessarily need those details to disappear from the design process.</p>
+      <p>They merely need to disappear from the human&rsquo;s critical path.</p>
+      <p>This is a substantially different proposition from HLS.</p>
+
+      <h2>A possible second chance for programmable logic</h2>
+      <p>None of this implies that FPGAs are about to replace GPUs.</p>
+      <p>For large transformer models, the economics of dense matrix hardware and HBM remain formidable.</p>
+      <p>The more interesting opportunity may lie at the boundaries of AI systems:</p>
+      <p><code>network &rarr; FPGA &rarr; GPU/NPU &rarr; network</code>.</p>
+      <p>The FPGA can perform operations for which the GPU is structurally less well suited: protocol termination, deterministic data movement, packet steering, compression, custom security functions, low-latency filtering, sensor interfaces, preprocessing, specialized numerical formats, and real-time control.</p>
+      <p>The GPU or neural processing unit (NPU) can then do what it does exceptionally well: large-scale tensor computation.</p>
+      <p>This is less exciting than declaring that the FPGA will replace the GPU.</p>
+      <p>It may also be much more useful.</p>
+
+      <h2>The broader lesson</h2>
+      <p>There is a tendency in engineering to identify flexibility with the number of things a device can be configured to do.</p>
+      <p>AI computing suggests another definition.</p>
+      <p>A system is flexible when the cost of changing what it does is small.</p>
+      <p>Under the first definition, an FPGA is extraordinarily flexible. Under the second, a GPU running a mature software stack can be even more flexible.</p>
+      <p>That distinction helps explain an otherwise puzzling period in semiconductor history.</p>
+      <p>Intel and AMD saw heterogeneous computing coming. Microsoft demonstrated that reconfigurable data-center acceleration actually worked. FPGA vendors built increasingly sophisticated high-level tools. Xilinx developed adaptive computing devices specifically intended to span conventional processing, programmable logic, and specialized AI engines.</p>
+      <p>And nevertheless, when perhaps the largest new accelerator market in computing history arrived, most of its value flowed elsewhere.</p>
+      <p>The industry did not misunderstand the need for specialization.</p>
+      <p>It misunderstood the economics of specialization.</p>
+      <p>For FPGA engineers, that is perhaps the more useful conclusion.</p>
+      <p>And if AI agents substantially reduce the cost of creating, verifying, and optimizing specialized hardware, then the experiment may not be finished.</p>
+      <p>The FPGA may not have needed a better C compiler.</p>
+      <p>It may have needed a machine that could become the FPGA engineer.</p>
+
+      <h2>Sources</h2>
+      <ul>
+        <li>Putnam et al., &ldquo;A Reconfigurable Fabric for Accelerating Large-Scale Datacenter Services,&rdquo; ISCA 2014. Describes the 1,632-server pilot and reports the 95% per-server ranking throughput improvement at fixed latency. <a href="https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/Catapult_ISCA_2014.pdf">Paper (PDF)</a>.</li>
+        <li>Microsoft Research, Project Catapult project page. Timeline covering the 2010 origin, the 2012 scale pilot, at-scale deployment in Bing and Azure, and Project Brainwave. <a href="https://www.microsoft.com/en-us/research/project/project-catapult/">Project page</a>.</li>
+        <li>Intel, &ldquo;Intel to Acquire Altera,&rdquo; June 1, 2015. States the approximately $16.7 billion valuation and the plan to offer Altera FPGAs with Xeon processors as integrated products. <a href="https://www.intc.com/news-events/press-releases/detail/333/intel-to-acquire-altera">Press release</a>.</li>
+        <li>Intel, &ldquo;Intel Completes Acquisition of Altera,&rdquo; December 28, 2015. Krzanich statement naming autonomous driving and machine learning. <a href="https://www.intc.com/news-events/press-releases/detail/302/intel-completes-acquisition-of-altera">Press release</a>.</li>
+        <li>AMD, &ldquo;AMD to Acquire Xilinx, Creating the Industry&rsquo;s High Performance Computing Leader,&rdquo; October 27, 2020. States the $35 billion all-stock valuation. <a href="https://ir.amd.com/news-events/press-releases/detail/977/amd-to-acquire-xilinx-creating-the-industrys-high-performance-computing-leader">Press release</a>.</li>
+        <li>AMD, &ldquo;AMD Completes Acquisition of Xilinx,&rdquo; February 14, 2022. Describes the combined portfolio as CPUs, GPUs, FPGAs, and Adaptive SoCs. <a href="https://ir.amd.com/news-events/press-releases/detail/1047/amd-completes-acquisition-of-xilinx">Press release</a>.</li>
+        <li>NVIDIA introduced CUDA in November 2006 as a general-purpose parallel computing platform for its GPUs.</li>
+      </ul>
+
+    </article>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="site-footer__inner">
+    <p class="site-footer__contact">Contact: <a href="mailto:contact@fpgapa.org">contact@fpgapa.org</a></p>
+    <p>Code: <a href="https://github.com/fpga-professional-association/fpgapa_website/blob/main/LICENSE">MIT</a>. Content: <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. <a href="https://github.com/fpga-professional-association/fpgapa_website">Source on GitHub</a>.</p>
+  </div>
+</footer>
+
+</body>
+</html>

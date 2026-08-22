@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FPGA AI Suite numeric formats &mdash; FPGA Professional Association</title>
+  <meta name="description" content="The four block-floating-point formats in the Altera FPGA AI Suite IP (FP11, FP12AGX, FP13AGX, FP16): bit layouts, a worked quantization example, where fp32 and fp16 appear, multiplications per DSP block, and the rest of the global parameter group.">
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+  <link rel="stylesheet" href="/styles.css">
+  <meta property="og:title" content="Numeric formats in the Altera FPGA AI Suite IP">
+  <meta property="og:description" content="FP11, FP12AGX, FP13AGX and FP16 at the bit level, a worked quantization example, where fp32 and fp16 appear, and the cost of each format in DSP blocks.">
+  <meta property="og:type" content="article">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<header class="site-header">
+  <div class="site-header__inner">
+    <a class="site-header__brand" href="/">FPGA PA</a>
+    <nav class="site-nav" aria-label="Main">
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/about.html">About</a></li>
+        <li><a href="/resources.html" aria-current="page">Resources</a></li>
+        <li><a href="/tools.html">Tools</a></li>
+        <li><a href="/blog.html">Blog</a></li>
+        <li><a href="/contribute.html">Contribute</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main id="main" class="site-main">
+  <div class="container">
+    <article>
+
+      <p class="small"><a href="/resources.html">Resources</a> &rsaquo; Numeric formats in the Altera FPGA AI Suite IP</p>
+
+      <h1>Numeric formats in the Altera FPGA AI Suite IP</h1>
+      <p class="lead">The FPGA AI Suite is Altera&rsquo;s artificial intelligence (AI) inference block for its field-programmable gate array (FPGA) families. It is configured through an architecture file whose global parameters size the processing element (PE) array &mdash; <code>k_vector</code> (KVEC) PEs, each computing a <code>c_vector</code> (CVEC)-wide dot product, across <code>num_lanes</code> lanes &mdash; the on-chip feature cache, and the graph limits. One parameter, <code>arch_precision</code>, sets the number format for every multiply in the array and dominates both area and accuracy. This page reads section 2.5.2.1 of the reference manual: the four formats at the bit level, what blocking does to real numbers, where the intellectual property (IP) block uses fp32 and fp16 instead, what each format costs in digital signal processing (DSP) blocks, and the remaining global parameters.</p>
+      <p class="small">Published 2026-08-22. Source: <a href="https://docs.altera.com/r/docs/768974/2025.1/fpga-ai-suite-ip-reference-manual/parameter-group-global-parameters">Altera FPGA AI Suite IP Reference Manual, version 2025.1</a>. Every parameter range, bit layout, and DSP count on this page comes from that manual. Where the page adds an explanation the manual does not give, the text says so and cites the DSP block documentation it rests on.</p>
+
+      <h2>The four formats at the bit level</h2>
+      <p>Section 2.5 of the manual defines the legal values of <code>arch_precision</code> as FP11 = INT7-BFP (1s.6m.5e), FP12AGX = INT8-BFP (8m.5e, two&rsquo;s complement), FP13AGX = INT9-BFP (9m.5e, two&rsquo;s complement), and FP16 = INT12-BFP (1s.11m.5e). All four are block floating point (BFP). Each element stores a sign and a mantissa. A block of CVEC elements shares one 5-bit exponent.</p>
+
+      <svg viewBox="0 0 720 352" role="img" aria-labelledby="bits-title bits-desc">
+      <title id="bits-title">Bit fields of the four arch_precision formats</title>
+      <desc id="bits-desc">Four rows of bit cells, right-aligned on bit 0. FP11: one sign bit and six magnitude bits. FP12AGX: eight two's-complement bits. FP13AGX: nine two's-complement bits. FP16: one sign bit and eleven magnitude bits. A separate row shows the five exponent bits that one block of CVEC elements shares.</desc>
+      <g font-size="11" fill="var(--color-fg-muted)" text-anchor="middle">
+      <text x="696" y="22">0</text>
+      <text x="656" y="22">1</text>
+      <text x="616" y="22">2</text>
+      <text x="576" y="22">3</text>
+      <text x="536" y="22">4</text>
+      <text x="496" y="22">5</text>
+      <text x="456" y="22">6</text>
+      <text x="416" y="22">7</text>
+      <text x="376" y="22">8</text>
+      <text x="336" y="22">9</text>
+      <text x="296" y="22">10</text>
+      <text x="256" y="22">11</text>
+      </g>
+      <text x="228" y="22" font-size="11" fill="var(--color-fg-muted)" text-anchor="end">bit</text>
+      <defs><g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" text-anchor="middle"><symbol id="cm"><rect width="36" height="30" rx="3" fill="var(--color-code-bg)" stroke="var(--color-border)"/><text x="18" y="20" fill="var(--color-fg)">m</text></symbol><symbol id="cs"><rect width="36" height="30" rx="3" fill="var(--color-accent)"/><text x="18" y="20" fill="var(--color-bg)">S</text></symbol><symbol id="ct"><rect x="1" y="1" width="34" height="28" rx="3" fill="var(--color-bg)" stroke="var(--color-accent)" stroke-width="1.5" stroke-dasharray="3 2"/><text x="18" y="20" fill="var(--color-accent)">s</text></symbol><symbol id="ce"><rect width="36" height="30" rx="3" fill="var(--color-fg)"/><text x="18" y="20" fill="var(--color-bg)">e</text></symbol></g></defs>
+      <text x="0" y="57" font-size="15" font-weight="600" fill="var(--color-fg)">FP11</text>
+      <text x="0" y="72" font-size="11" fill="var(--color-fg-muted)">INT7-BFP &#183; 1 sign + 6 magnitude</text>
+      <use href="#cs" x="438" y="44" width="36" height="30"/><use href="#cm" x="478" y="44" width="36" height="30"/><use href="#cm" x="518" y="44" width="36" height="30"/><use href="#cm" x="558" y="44" width="36" height="30"/><use href="#cm" x="598" y="44" width="36" height="30"/><use href="#cm" x="638" y="44" width="36" height="30"/><use href="#cm" x="678" y="44" width="36" height="30"/>
+      <text x="0" y="117" font-size="15" font-weight="600" fill="var(--color-fg)">FP12AGX</text>
+      <text x="0" y="132" font-size="11" fill="var(--color-fg-muted)">INT8-BFP &#183; two’s complement</text>
+      <use href="#ct" x="398" y="104" width="36" height="30"/><use href="#cm" x="438" y="104" width="36" height="30"/><use href="#cm" x="478" y="104" width="36" height="30"/><use href="#cm" x="518" y="104" width="36" height="30"/><use href="#cm" x="558" y="104" width="36" height="30"/><use href="#cm" x="598" y="104" width="36" height="30"/><use href="#cm" x="638" y="104" width="36" height="30"/><use href="#cm" x="678" y="104" width="36" height="30"/>
+      <text x="0" y="177" font-size="15" font-weight="600" fill="var(--color-fg)">FP13AGX</text>
+      <text x="0" y="192" font-size="11" fill="var(--color-fg-muted)">INT9-BFP &#183; two’s complement</text>
+      <use href="#ct" x="358" y="164" width="36" height="30"/><use href="#cm" x="398" y="164" width="36" height="30"/><use href="#cm" x="438" y="164" width="36" height="30"/><use href="#cm" x="478" y="164" width="36" height="30"/><use href="#cm" x="518" y="164" width="36" height="30"/><use href="#cm" x="558" y="164" width="36" height="30"/><use href="#cm" x="598" y="164" width="36" height="30"/><use href="#cm" x="638" y="164" width="36" height="30"/><use href="#cm" x="678" y="164" width="36" height="30"/>
+      <text x="0" y="237" font-size="15" font-weight="600" fill="var(--color-fg)">FP16</text>
+      <text x="0" y="252" font-size="11" fill="var(--color-fg-muted)">INT12-BFP &#183; 1 sign + 11 magnitude</text>
+      <use href="#cs" x="238" y="224" width="36" height="30"/><use href="#cm" x="278" y="224" width="36" height="30"/><use href="#cm" x="318" y="224" width="36" height="30"/><use href="#cm" x="358" y="224" width="36" height="30"/><use href="#cm" x="398" y="224" width="36" height="30"/><use href="#cm" x="438" y="224" width="36" height="30"/><use href="#cm" x="478" y="224" width="36" height="30"/><use href="#cm" x="518" y="224" width="36" height="30"/><use href="#cm" x="558" y="224" width="36" height="30"/><use href="#cm" x="598" y="224" width="36" height="30"/><use href="#cm" x="638" y="224" width="36" height="30"/><use href="#cm" x="678" y="224" width="36" height="30"/>
+      <line x1="0" y1="280" x2="720" y2="280" stroke="var(--color-border)" stroke-dasharray="4 3"/>
+      <text x="0" y="315" font-size="15" font-weight="600" fill="var(--color-fg)">E</text>
+      <text x="0" y="330" font-size="11" fill="var(--color-fg-muted)">5-bit exponent, one per block</text>
+      <use href="#ce" x="518" y="302" width="36" height="30"/><use href="#ce" x="558" y="302" width="36" height="30"/><use href="#ce" x="598" y="302" width="36" height="30"/><use href="#ce" x="638" y="302" width="36" height="30"/><use href="#ce" x="678" y="302" width="36" height="30"/>
+      <text x="506" y="321" font-size="11" fill="var(--color-fg-muted)" text-anchor="end">shared by all CVEC elements of the block</text>
+      </svg>
+
+      <p class="small">Dashed cell: the most significant bit of a two&rsquo;s-complement mantissa. It carries the weight &minus;2<sup>N&minus;1</sup>, so it acts as the sign without being a separate field. In all four formats the usable magnitude is N&nbsp;&minus;&nbsp;1 bits: 6, 7, 8, and 11. The sign-magnitude formats have a redundant negative-zero code. The two&rsquo;s-complement formats have the asymmetric range &minus;2<sup>N&minus;1</sup> to 2<sup>N&minus;1</sup>&nbsp;&minus;&nbsp;1 and no negative zero.</p>
+
+      <h3>Where the names come from</h3>
+      <p>The manual does not explain the names. They are consistent with the scalar minifloat each format derives from: 1 sign bit, 5 exponent bits, and <var>n</var>&nbsp;&minus;&nbsp;6 fraction bits, so FP11 has 5 fraction bits and FP16 has 10. Converting to block floating point makes the hidden leading 1 explicit and moves the exponent out of the element. What remains is an (<var>n</var>&nbsp;&minus;&nbsp;4)-bit signed integer: INT7, INT8, INT9, INT12. The white paper the manual cites shows the same construction for a 9-bit minifloat blocked to int5bfp (source 3). The AGX suffix marks the two formats that map onto native signed multiplier modes of Agilex DSP blocks, covered below.</p>
+
+      <h2>What the shared exponent costs</h2>
+      <p>The exponent costs 5 bits per block at every block size. Element width, not exponent overhead, is what grows with precision. The table gives stored bits per element, including the amortized exponent, for each legal <code>c_vector</code> value: (N&nbsp;&times;&nbsp;CVEC&nbsp;+&nbsp;5)&nbsp;&divide;&nbsp;CVEC.</p>
+
+      <table>
+        <thead>
+          <tr><th>Format</th><th>N</th><th>CVEC 4</th><th>CVEC 8</th><th>CVEC 16</th><th>CVEC 32</th><th>CVEC 64</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>FP11</code></td><td>7</td><td>8.25</td><td>7.63</td><td>7.31</td><td>7.16</td><td>7.08</td></tr>
+          <tr><td><code>FP12AGX</code></td><td>8</td><td>9.25</td><td>8.63</td><td>8.31</td><td>8.16</td><td>8.08</td></tr>
+          <tr><td><code>FP13AGX</code></td><td>9</td><td>10.25</td><td>9.63</td><td>9.31</td><td>9.16</td><td>9.08</td></tr>
+          <tr><td><code>FP16</code></td><td>12</td><td>13.25</td><td>12.63</td><td>12.31</td><td>12.16</td><td>12.08</td></tr>
+        </tbody>
+      </table>
+
+      <p>At CVEC = 64 the exponent is 1.1&nbsp;% of an FP11 block (5 of 453 bits) and 0.6&nbsp;% of an FP16 block (5 of 773 bits). An FP16 block is 1.6 to 1.7 times the size of an FP11 block across the legal CVEC values: 53 versus 33 bits at CVEC = 4, 773 versus 453 at CVEC = 64. This matches the manual: <code>arch_precision</code> has a relatively large effect on accuracy, FP16 significantly increases the size of the IP, and <code>c_vector</code> has a generally small effect on accuracy.</p>
+
+      <h2>What blocking does to real numbers</h2>
+      <p>The block exponent E comes from the element with the largest magnitude: E = &lfloor;log<sub>2</sub> max&nbsp;|v|&rfloor;. Every element is then divided by 2<sup>E&minus;P+1</sup>, where P = N&nbsp;&minus;&nbsp;1 is the magnitude width, and rounded to an integer. An element <var>e</var> binades below the block maximum loses <var>e</var> of its mantissa bits. An element N or more binades below it rounds to zero. The two tables apply this to the same four values in FP11 and FP16. Rounding is to nearest. The manual does not document the exponent field&rsquo;s bias or range, and the example does not model them.</p>
+
+      <p><strong>FP11</strong>: N = 7, P = 6. E = &lfloor;log<sub>2</sub> 1.9&rfloor; = 0. Least significant bit weight 2<sup>0&minus;5</sup> = 1/32 = 0.03125. Mantissa range &minus;63 to 63.</p>
+      <table>
+        <thead>
+          <tr><th>Input</th><th>Binade <var>e</var></th><th>Bits lost, E&nbsp;&minus;&nbsp;<var>e</var></th><th>Mantissa <var>m</var></th><th>Stored bits</th><th>Reconstructed</th><th>Error</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>1.9</td><td>0</td><td>0</td><td>61</td><td><code>0 111101</code></td><td>1.90625</td><td>+0.33&nbsp;%</td></tr>
+          <tr><td>0.75</td><td>&minus;1</td><td>1</td><td>24</td><td><code>0 011000</code></td><td>0.75</td><td>0.00&nbsp;%</td></tr>
+          <tr><td>&minus;0.031</td><td>&minus;6</td><td>6</td><td>&minus;1</td><td><code>1 000001</code></td><td>&minus;0.03125</td><td>+0.81&nbsp;%</td></tr>
+          <tr><td>0.0042</td><td>&minus;8</td><td>8</td><td>0</td><td><code>0 000000</code></td><td>0</td><td>rounds to zero</td></tr>
+        </tbody>
+      </table>
+
+      <p><strong>FP16</strong>: N = 12, P = 11. E = 0. Least significant bit weight 2<sup>&minus;10</sup> = 0.0009765625. Mantissa range &minus;2047 to 2047.</p>
+      <table>
+        <thead>
+          <tr><th>Input</th><th>Binade <var>e</var></th><th>Bits lost, E&nbsp;&minus;&nbsp;<var>e</var></th><th>Mantissa <var>m</var></th><th>Stored bits</th><th>Reconstructed</th><th>Error</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>1.9</td><td>0</td><td>0</td><td>1946</td><td><code>0 11110011010</code></td><td>1.900390625</td><td>+0.02&nbsp;%</td></tr>
+          <tr><td>0.75</td><td>&minus;1</td><td>1</td><td>768</td><td><code>0 01100000000</code></td><td>0.75</td><td>0.00&nbsp;%</td></tr>
+          <tr><td>&minus;0.031</td><td>&minus;6</td><td>6</td><td>&minus;32</td><td><code>1 00000100000</code></td><td>&minus;0.03125</td><td>+0.81&nbsp;%</td></tr>
+          <tr><td>0.0042</td><td>&minus;8</td><td>8</td><td>4</td><td><code>0 00000000100</code></td><td>0.00390625</td><td>&minus;6.99&nbsp;%</td></tr>
+        </tbody>
+      </table>
+
+      <p>The pattern holds at any width: a large element in a block costs its small neighbors their low bits. A wider <code>c_vector</code> puts more elements under one exponent, which is the mechanism behind its small but nonzero effect on accuracy.</p>
+
+      <h2>INT8 graphs</h2>
+      <p>For a graph with 8-bit integer (INT8) symmetric quantization, the compiler sets the block exponent so that the INT8 weights are used directly as the mantissas. The manual limits this to architectures whose mantissa is 8 bits or wider, which excludes FP11. INT8 graphs do not change inference speed or FPGA resource use; the same hardware runs every graph. <code>pe_array/enable_scale</code> must be <code>true</code> for INT8-quantized graphs.</p>
+
+      <h2>Where each numeric type is used</h2>
+      <p>The manual fixes the precision of every stage. Features and weights use <code>arch_precision</code>. The PE accumulators are fp32. The accumulator bias value, the scale multiplier, the drain from the accumulators to the crossbar (XBAR), and the auxiliary modules are all fp16. The diagram reads those statements as a data path. The manual does not specify the order of the scale and bias operations inside the PE.</p>
+
+      <svg viewBox="0 0 720 350" role="img" aria-labelledby="flow-title flow-desc">
+      <title id="flow-title">Numeric types along the FPGA AI Suite IP data path</title>
+      <desc id="flow-desc">Weights from the filter scratchpad and features from the stream buffer, both in arch_precision block floating point, enter the PE array. Each PE computes a CVEC-wide integer dot product and accumulates in fp32. Scale and bias are applied in fp16. Results drain in fp16 through the crossbar to the auxiliary modules (activation, pool, depthwise, elementwise multiply, softmax), also fp16, and are written back to the stream buffer re-blocked into arch_precision.</desc>
+      <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--color-fg)"/></marker></defs>
+      <rect x="8" y="16" width="150" height="44" rx="4" fill="var(--color-code-bg)" stroke="var(--color-border)"/>
+      <text x="18" y="34" font-size="13" font-weight="600" fill="var(--color-fg)">Filter scratchpad</text>
+      <text x="18" y="50" font-size="11.5" fill="var(--color-fg-muted)">weights &#183; arch_precision</text>
+      <rect x="8" y="72" width="150" height="44" rx="4" fill="var(--color-code-bg)" stroke="var(--color-border)"/>
+      <text x="18" y="90" font-size="13" font-weight="600" fill="var(--color-fg)">Stream buffer</text>
+      <text x="18" y="106" font-size="11.5" fill="var(--color-fg-muted)">features &#183; arch_precision</text>
+      <rect x="186" y="8" width="380" height="196" rx="6" fill="none" stroke="var(--color-fg)" stroke-dasharray="5 4"/>
+      <text x="198" y="28" font-size="13" font-weight="600" fill="var(--color-fg)">PE array</text>
+      <text x="264" y="28" font-size="11.5" fill="var(--color-fg-muted)">KVEC PEs per lane &#183; num_lanes lanes</text>
+      <rect x="200" y="42" width="178" height="66" rx="4" fill="var(--color-code-bg)" stroke="var(--color-border)"/>
+      <text x="210" y="60" font-size="13" font-weight="600" fill="var(--color-fg)">CVEC-wide dot product</text>
+      <text x="210" y="77" font-size="11.5" fill="var(--color-fg-muted)">integer mantissa products</text>
+      <text x="210" y="93" font-size="11.5" fill="var(--color-fg-muted)">summed, one exponent add</text>
+      <rect x="390" y="42" width="160" height="66" rx="4" fill="var(--color-fg)"/>
+      <text x="400" y="60" font-size="13" font-weight="600" fill="var(--color-bg)">Accumulator</text>
+      <text x="400" y="77" font-size="11.5" fill="var(--color-bg)">fp32</text>
+      <text x="400" y="93" font-size="11.5" fill="var(--color-bg)">one per PE per lane</text>
+      <rect x="200" y="128" width="350" height="54" rx="4" fill="var(--color-bg)" stroke="var(--color-accent)" stroke-width="1.5"/>
+      <text x="210" y="148" font-size="13" font-weight="600" fill="var(--color-fg)">scale &#183; bias add</text>
+      <text x="210" y="166" font-size="11.5" fill="var(--color-fg-muted)">fp16 &#183; fp16</text>
+      <rect x="200" y="232" width="110" height="54" rx="4" fill="var(--color-bg)" stroke="var(--color-accent)" stroke-width="1.5"/>
+      <text x="210" y="252" font-size="13" font-weight="600" fill="var(--color-fg)">Drain</text>
+      <text x="210" y="270" font-size="11.5" fill="var(--color-fg-muted)">fp16</text>
+      <rect x="334" y="232" width="90" height="54" rx="4" fill="var(--color-bg)" stroke="var(--color-fg)"/>
+      <text x="344" y="263" font-size="13" font-weight="600" fill="var(--color-fg)">XBAR</text>
+      <rect x="448" y="214" width="262" height="90" rx="4" fill="var(--color-bg)" stroke="var(--color-accent)" stroke-width="1.5"/>
+      <text x="458" y="234" font-size="13" font-weight="600" fill="var(--color-fg)">Auxiliary modules</text>
+      <text x="458" y="252" font-size="11.5" fill="var(--color-fg-muted)">activation &#183; pool &#183; depthwise</text>
+      <text x="458" y="268" font-size="11.5" fill="var(--color-fg-muted)">elementwise multiply &#183; softmax</text>
+      <text x="458" y="290" font-size="11.5" fill="var(--color-fg-muted)">fp16</text>
+      <path d="M158 38L200 62" fill="none" stroke="var(--color-fg)" stroke-width="1.5" marker-end="url(#ah)"/>
+      <path d="M158 94L200 86" fill="none" stroke="var(--color-fg)" stroke-width="1.5" marker-end="url(#ah)"/>
+      <path d="M378 75L390 75" fill="none" stroke="var(--color-fg)" stroke-width="1.5" marker-end="url(#ah)"/>
+      <path d="M467 108L467 128" fill="none" stroke="var(--color-fg)" stroke-width="1.5" marker-end="url(#ah)"/>
+      <path d="M255 182L255 232" fill="none" stroke="var(--color-fg)" stroke-width="1.5" marker-end="url(#ah)"/>
+      <path d="M310 259L334 259" fill="none" stroke="var(--color-fg)" stroke-width="1.5" marker-end="url(#ah)"/>
+      <path d="M424 259L448 259" fill="none" stroke="var(--color-fg)" stroke-width="1.5" marker-end="url(#ah)"/>
+      <path d="M579 304L579 326L83 326L83 116" fill="none" stroke="var(--color-fg)" stroke-width="1.5" marker-end="url(#ah)" stroke-dasharray="5 4"/>
+      <text x="100" y="344" font-size="11.5" fill="var(--color-fg-muted)">written back to the stream buffer, re-blocked into arch_precision</text>
+      </svg>
+
+      <p class="small">Shaded boxes hold block floating point. The dark box is fp32. Blue outlines are fp16.</p>
+
+      <h3>Block floating point for the dot products</h3>
+      <p>The manual states the consequences: lower precision raises frames per second and reduces area at the cost of accuracy; FP11 needs the fewest random-access memory (RAM) blocks and slightly reduces external memory traffic; FP16 significantly increases the size of the IP. The mechanism is implicit in the manual and explicit here. Within a block, a dot product of two BFP vectors is an integer dot product. The mantissa products are summed in integer arithmetic, and one exponent addition covers the whole block. That is the shape of a DSP block: a narrow integer multiplier feeding a wide adder. Per-element floating point would need an alignment shifter and a normalizer on every product. Blocking amortizes that to one per CVEC products. The shared 5-bit exponent, the same width as IEEE half precision, keeps floating-point dynamic range across blocks and layers while the in-block arithmetic stays fixed point. Multiplier width, block RAM width, and memory traffic therefore scale with N rather than with a full floating-point word.</p>
+
+      <h3>fp32 for the accumulators</h3>
+      <p>A convolution output sums products from many blocks: the input channels divided by CVEC, times the filter taps, each block with its own exponent. Adding those partial sums is again a floating-point operation, and the running sum is far larger than any single product. A 24-bit significand keeps late small products from being swamped and avoids overflow over long accumulations. A 7- to 12-bit mantissa cannot. The manual budgets one accumulator per PE per lane: KVEC&nbsp;&times;&nbsp;num_lanes DSP blocks in addition to the multipliers.</p>
+
+      <h3>fp16 after the accumulator</h3>
+      <p>Once a result leaves the accumulator it is a single value, not a member of a dot-product block. Scale, bias, the activation functions, pooling, elementwise multiplication, and softmax act on values individually. A shared exponent gains nothing there, and a per-element exponent is required. fp16 carries the value with its own exponent at half the width of fp32. That halves the drain and crossbar data paths (the manual requires the PE drain width to equal the XBAR KVEC), and fp16 is a native mode of Agilex DSP blocks (source 4). Results are re-blocked into <code>arch_precision</code> when written back to the stream buffer for the next layer.</p>
+
+      <h2>Multiplications per DSP block</h2>
+      <p>Table 4 of the manual gives multiplications per DSP block by format and device family. INT8 symmetric quantization is available with FP12AGX and higher.</p>
+
+      <table>
+        <thead>
+          <tr><th>Format</th><th>Mantissa</th><th>Arria 10, Cyclone 10 GX, Stratix 10</th><th>Agilex 7</th><th>Agilex 5</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>FP11</code></td><td>INT7, sign-magnitude</td><td>4</td><td>4</td><td>20, with 12&times;1 interleave</td></tr>
+          <tr><td><code>FP12AGX</code></td><td>INT8, two&rsquo;s complement</td><td>not supported</td><td>not supported</td><td>20, with 12&times;1 interleave</td></tr>
+          <tr><td><code>FP13AGX</code></td><td>INT9, two&rsquo;s complement</td><td>not supported</td><td>4</td><td>4, using 4 of the block&rsquo;s 6 multipliers</td></tr>
+          <tr><td><code>FP16</code></td><td>INT12, sign-magnitude</td><td>2</td><td>2</td><td>2</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Why two formats are two&rsquo;s complement</h3>
+      <p>The manual gives the counts. The reasons below come from the DSP block documentation (sources 4 and 5) and from the multiplier widths.</p>
+      <ul>
+        <li><strong>FP13AGX matches the Agilex 7 DSP block.</strong> The Agilex 7 variable-precision DSP block has a fixed-point mode that computes four signed 9&nbsp;&times;&nbsp;9 products per block. A 9-bit two&rsquo;s-complement mantissa is that operand exactly, so the sign needs no handling outside the DSP. The Arria 10 and Stratix 10 variable-precision DSP blocks offer 18&nbsp;&times;&nbsp;19 and 27&nbsp;&times;&nbsp;27 multipliers and no 9&nbsp;&times;&nbsp;9 mode, which is why the manual lists no FP13AGX support for them.</li>
+        <li><strong>FP12AGX matches the Agilex 5 AI tensor block.</strong> The enhanced DSP block on Agilex 5 performs twenty INT8 multiplications per block in tensor mode, with support for a block-floating exponent. An 8-bit two&rsquo;s-complement mantissa is its native operand. The manual&rsquo;s 20 multiplications per DSP, the 12&nbsp;&times;&nbsp;1 interleave requirement, and its statement that FP12AGX cuts the DSP count significantly all follow from that mode.</li>
+        <li><strong>FP11 and FP16 are sign-magnitude because they predate Agilex.</strong> Two unsigned 6-bit magnitudes fit in one 18-bit operand with their product fields 12 bits apart, which gives two products per 18&nbsp;&times;&nbsp;19 multiplier and four per block, with the sign resolved by an exclusive-OR outside the DSP. A two&rsquo;s-complement operand cannot be packed that way. An 11-bit magnitude needs a whole multiplier, which gives FP16 two per block on every family. The packing is inference from the multiplier widths; the manual states only the counts.</li>
+        <li><strong>Agilex 5 is a special case.</strong> Tensor mode lifts FP11 and FP12AGX to 20 multiplications per DSP only with interleave 12&nbsp;&times;&nbsp;1. FP13AGX on Agilex 5 uses the INT9 vector mode, of which the suite currently uses four of the six multipliers. The manual warns that the multiplier count under-predicts DSP usage in tensor mode.</li>
+      </ul>
+
+      <h2>Estimating the DSP budget</h2>
+      <p>From the manual: the PE array needs CVEC&nbsp;&times;&nbsp;KVEC&nbsp;&times;&nbsp;num_lanes multipliers, plus KVEC&nbsp;&times;&nbsp;num_lanes DSP blocks for the fp32 accumulators. Dividing the multiplier count by the multiplications per DSP gives the multiplier DSPs. Two examples with CVEC = 16, KVEC = 64, and one lane:</p>
+      <ul>
+        <li>Agilex 7, FP11: 16&nbsp;&times;&nbsp;64&nbsp;&times;&nbsp;1 = 1,024 multipliers, &divide;&nbsp;4 = 256 DSP blocks, plus 64 accumulators: 320.</li>
+        <li>Agilex 5, FP12AGX with 12&nbsp;&times;&nbsp;1 interleave: 1,024&nbsp;&divide;&nbsp;20 = 51.2, rounded up to 52, plus 64 accumulators: 116. Treat this as a floor because of the tensor-mode caveat above.</li>
+      </ul>
+      <p>The manual&rsquo;s constraints: KVEC must be a multiple of CVEC and divisible by the crossbar and auxiliary k_vector values. With the depthwise module, KVEC must equal CVEC.</p>
+
+      <h2>Choosing a format</h2>
+      <p>The example architectures shipped with the suite already use the recommended <code>arch_precision</code> for each family. The manual gives these reasons to change it.</p>
+
+      <table>
+        <thead>
+          <tr><th>Format</th><th>Families</th><th>Magnitude bits</th><th>Reason to choose</th><th>Cost</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>FP11</code></td><td>all five</td><td>6</td><td>Throughput and area matter most and the model tolerates low precision (retrained or quantization-aware). Fewest RAM blocks, slightly less external memory traffic, best multiplier packing on every family. On Agilex 5, pairs with 12&times;1 interleave to use the tensor blocks.</td><td>Largest accuracy loss. Cannot take INT8 weights directly.</td></tr>
+          <tr><td><code>FP12AGX</code></td><td>Agilex 5</td><td>7</td><td>INT8 symmetric-quantized graphs on Agilex 5. Cuts the DSP count significantly through tensor mode.</td><td>Logic utilization may rise. Not available on other families.</td></tr>
+          <tr><td><code>FP13AGX</code></td><td>Agilex 7, Agilex 5</td><td>8</td><td>INT8 graphs on Agilex 7, or one extra bit over INT8 at the same 4-per-DSP packing that FP11 gets on that family.</td><td>On Agilex 5 it gives up tensor mode: 4 per DSP instead of 20.</td></tr>
+          <tr><td><code>FP16</code></td><td>all five, listed as less common</td><td>11</td><td>Models never retrained for low precision that lose too much accuracy below it. Closest to the original fp32 graph.</td><td>Significantly larger IP. 2 multiplications per DSP on every family.</td></tr>
+        </tbody>
+      </table>
+
+      <p>Both knobs are fixed at IP generation. They are architecture parameters, not per-graph settings.</p>
+
+      <h2>The rest of the global parameter group</h2>
+      <p>Ranges and constraints are the manual&rsquo;s. Parameters marked &ldquo;optimizer&rdquo; are normally set by the architecture optimizer rather than by hand.</p>
+      <dl>
+        <dt><code>family</code> &mdash; A10, AGX5, AGX7, C10, S10</dt>
+        <dd>Target device family. AGX5 covers Agilex 5 and Agilex 3. C10 is Cyclone 10 GX. The family decides which <code>arch_precision</code> values and interleave factors are legal.</dd>
+
+        <dt><code>k_vector</code> (KVEC) &mdash; 4 to 128, optimizer</dt>
+        <dd>Number of PEs in the array, equal to the number of filters processed at once. Must be a multiple of <code>c_vector</code>, divisible by the crossbar and auxiliary k_vector values, and equal to <code>c_vector</code> when the depthwise module is used.</dd>
+
+        <dt><code>c_vector</code> (CVEC) &mdash; 4, 8, 16, 32, 64, optimizer</dt>
+        <dd>Width of the dot product in each PE, and therefore the block size of the number format. Must equal <code>k_vector</code> with the depthwise module.</dd>
+
+        <dt><code>num_lanes</code> &mdash; 1, 2, 4</dt>
+        <dd>Output-height slices computed in parallel. Scales the PE array, its DSP count, and the total stream buffer. A 4-lane architecture with <code>stream_buffer_depth</code> 10k has a 40k total stream buffer, so set the depth to the per-lane share.</dd>
+
+        <dt><code>stream_buffer_depth</code> &mdash; 2048 to 262144, optimizer</dt>
+        <dd>Depth of the on-chip cache for feature (image) data. Larger values cost logic and block RAM and raise performance. Features are held in <code>arch_precision</code>, so the format width multiplies this cost.</dd>
+
+        <dt><code>enable_eltwise_mult</code> &mdash; true or false</dt>
+        <dd>Adds the elementwise multiplication layer. Required for MobileNetV3.</dd>
+
+        <dt><code>filter_size_width_max</code>, <code>filter_size_height_max</code> &mdash; 14 or 28</dt>
+        <dd>Largest convolution filter the IP can run. Also bounds the Average Pool window, which the <code>filter_scratchpad</code> and <code>filter_depth</code> parameters may limit further.</dd>
+
+        <dt><code>output_image_height_max</code>, <code>output_image_width_max</code>, <code>output_channels_max</code> &mdash; default 128&nbsp;&times;&nbsp;128, 8192 channels</dt>
+        <dd>Maximum output tensor size.</dd>
+
+        <dt><code>enable_debug</code> &mdash; true or false</dt>
+        <dd>Turns on the debug network, which forwards control and status register (CSR) read requests to externally attached debug-capable modules. Generally not needed for production architectures.</dd>
+
+        <dt><code>enable_layout_transform</code> &mdash; true or false</dt>
+        <dd>Dedicated hardware that transforms the input tensor layout and folds inputs into channels, for hostless systems or a slow or heavily loaded hard processor system (HPS). Configured through <code>layout_transform_params</code>. Area scales with input bus width, maximum tensor and stride dimensions, and CVEC; when <code>max_stride_width</code>&nbsp;&times;&nbsp;<code>max_stride_height</code>&nbsp;&times;&nbsp;<code>max_channels</code> exceeds CVEC it consumes significant memory for the overflow buffer. It cannot help when the first convolution&rsquo;s stride is 1, because nothing can be folded; the manual suggests a lighter transform outside the IP in that case. In system-on-chip streaming-to-memory (S2M) mode the hardware transform is supported on Agilex 7 only; other devices use a lightweight external module.</dd>
+      </dl>
+
+      <h2>Sources</h2>
+      <ol>
+        <li><a href="https://docs.altera.com/r/docs/768974/2025.1/fpga-ai-suite-ip-reference-manual/parameter-group-global-parameters">FPGA AI Suite IP Reference Manual 2025.1, section 2.5.2.1, Parameter Group: Global Parameters</a>. Parameter definitions, the <code>arch_precision</code> discussion, Table 4 (multiplications per DSP), INT8 compatibility, and the DSP count formula.</li>
+        <li><a href="https://docs.altera.com/r/docs/768974/2025.1/fpga-ai-suite-ip-reference-manual/fpga-ai-suite-ip-block-configuration?contentId=fqi5QdFfE3b6bPUgfp8bHQ">FPGA AI Suite IP Reference Manual 2025.1, section 2.5, IP Block Configuration</a>. Bit definitions of the four formats, fp32 accumulator, fp16 bias, scale, drain, and auxiliary precisions, interleave factors, and the drain-width constraint.</li>
+        <li><a href="https://ieeexplore.ieee.org/document/9609837/">Low Precision Networks for Efficient Inference on FPGAs</a>, Intel Programmable Solutions Group, IEEE. Block floating point construction with the implicit 1 made explicit, the FP9 to int5bfp example, and the DSP packing rationale.</li>
+        <li><a href="https://www.intel.com/content/www/us/en/docs/programmable/683037/23-1/variable-precision-dsp-blocks-overview.html">Agilex 7 Variable Precision DSP Blocks User Guide</a>. The 9&nbsp;&times;&nbsp;9 signed sum-of-4 fixed-point mode and the FP16 floating-point mode.</li>
+        <li><a href="https://cdrdv2-public.intel.com/776602/agilex-5-fpgas-enhanced-dsp-with-ai-tensor-block-architecture-brief.pdf">Agilex 5 FPGAs: Enhanced DSP with AI Tensor Block, architecture brief</a>. Twenty INT8 multiplications per block in tensor mode with a block-floating exponent, and the INT9 vector mode lineage.</li>
+      </ol>
+
+    </article>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="site-footer__inner">
+    <p class="site-footer__contact">Contact: <a href="mailto:contact@fpgapa.org">contact@fpgapa.org</a></p>
+    <p>Code: <a href="https://github.com/fpga-professional-association/fpgapa_website/blob/main/LICENSE">MIT</a>. Content: <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. <a href="https://github.com/fpga-professional-association/fpgapa_website">Source on GitHub</a>.</p>
+  </div>
+</footer>
+
+</body>
+</html>

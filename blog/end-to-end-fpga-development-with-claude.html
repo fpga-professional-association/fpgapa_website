@@ -39,7 +39,7 @@
 
       <h1>End-to-end FPGA development with Claude</h1>
       <p class="lead">In July 2026 an AI coding agent &mdash; Anthropic&rsquo;s Claude Code &mdash; took an association project from empty repository to measured neural-network inference on field-programmable gate array (FPGA) silicon in eight days. The agent wrote the plan documents, the register-transfer-level (RTL) code, the testbenches, the build scripts, and the debug drivers; ran the vendor toolchain; programmed the board; and diagnosed a silicon-level memory defect. One engineer supplied the hardware, the review, and the direction. This post documents the repository conventions that made an agent productive on real hardware, with a link to every measured number. The full project is public: <a href="https://github.com/fpga-professional-association/agilex_3_ai_benchmarks">agilex_3_ai_benchmarks</a>.</p>
-      <p class="small">Published 2026-07-28.</p>
+      <p class="small">Published 2026-07-28. AI assisted in writing this post.</p>
 
       <h2>The result</h2>
       <p>The project goal: run MLPerf Tiny inference workloads on the Arrow AXC3000, a $129 board carrying an Altera Agilex&nbsp;3 <code>A3CY100BM16AE7S</code> &mdash; a part with no hard processor system and no DDR memory, only a 16&nbsp;MB HyperRAM on an 8-bit bus. The repository&rsquo;s first commit landed 2026-07-03. The board arrived 2026-07-09. The first measured on-silicon inference &mdash; correct, input-dependent compute, verified against a software reference &mdash; is dated 2026-07-11. In between: 41 issues, 30 pull requests, and a plan that survived contact with the toolchain only after two major revisions.</p>

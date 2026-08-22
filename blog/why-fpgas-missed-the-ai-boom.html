@@ -147,6 +147,10 @@
       <p>They are less obviously valuable when the dominant task is moving tensors from HBM into a large collection of matrix multipliers.</p>
       <p>Thus the question is not whether an FPGA <em>can</em> perform the computation. Clearly it can.</p>
       <p>The question is what fraction of the silicon budget must be devoted to flexibility that the workload does not presently require.</p>
+      <p>For large language models (LLMs), that question had a decisive answer.</p>
+      <p>Every accelerator divides its die between the core compute element and everything that feeds, controls, and configures it. A GPU built for AI spends the dominant share of its silicon on hardened matrix arithmetic and the memory system that feeds it. An FPGA cannot make that allocation: a large fraction of its die is committed, before any user design exists, to configuration memory, programmable routing, and general-purpose LUT fabric &mdash; the machinery of reconfigurability itself.</p>
+      <p>Against a workload that had collapsed into one enormous regular primitive, no compiler could close that gap.</p>
+      <p>The LLM boom was never available to the FPGA.</p>
 
       <h2>The iteration-time problem</h2>
       <p>There is also a human timescale to consider.</p>
@@ -249,11 +253,16 @@
 
       <h2>A possible second chance for programmable logic</h2>
       <p>None of this implies that FPGAs are about to replace GPUs.</p>
-      <p>For large transformer models, the economics of dense matrix hardware and HBM remain formidable.</p>
-      <p>The more interesting opportunity may lie at the boundaries of AI systems:</p>
+      <p>The die-area argument makes the first boom permanently out of reach, not provisionally so: a machine that spends silicon on reconfigurability will not out-multiply a machine that spends the same silicon on multipliers, and for large transformer models the economics of dense matrix hardware and HBM remain formidable.</p>
+      <p>But the first boom is producing a second one.</p>
+      <p>Deployed AI systems generate demand for everything around the tensor computation:</p>
       <p><code>network &rarr; FPGA &rarr; GPU/NPU &rarr; network</code>.</p>
       <p>The FPGA can perform operations for which the GPU is structurally less well suited: protocol termination, deterministic data movement, packet steering, compression, custom security functions, low-latency filtering, sensor interfaces, preprocessing, specialized numerical formats, and real-time control.</p>
       <p>The GPU or neural processing unit (NPU) can then do what it does exceptionally well: large-scale tensor computation.</p>
+      <p>This second boom has the shape programmable logic was built for: diverse, irregular, latency-bound, and different at every deployment. No single hardened architecture will serve all of it.</p>
+      <p>What disqualifies the FPGA from workloads of this shape was never silicon. It is the second quantity of programmability &mdash; the cost of changing the computation.</p>
+      <p>Remove that quantity, and the second boom can go to the FPGA.</p>
+      <p>That is precisely the quantity an AI engineering agent attacks.</p>
       <p>This is less exciting than declaring that the FPGA will replace the GPU.</p>
       <p>It may also be much more useful.</p>
 

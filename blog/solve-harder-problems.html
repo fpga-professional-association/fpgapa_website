@@ -41,7 +41,7 @@
       <p class="lead">AI is taking the work. Whether it takes the job depends on what we do with the hours.</p>
       <p class="small">Published 2026-08-22.</p>
 
-      <p>The <a href="/blog/why-fpgas-missed-the-ai-boom.html">previous post on this site</a> argued that FPGAs missed the AI accelerator market because the cost of changing what the hardware does was too high. A GPU recompiles. An FPGA gets re-engineered. The essay closed on a conditional: if AI agents can absorb a large share of that engineering cost, the old economics of programmable logic deserve a second look.</p>
+      <p>The <a href="/blog/why-fpgas-missed-the-ai-boom.html">previous post on this site</a> argued that FPGAs missed the AI accelerator market for two structural reasons. The first was silicon: a GPU spends the dominant share of its die on the core compute element, while an FPGA must spend a large fraction of its die on the machinery of reconfigurability, so the large-language-model boom was never available to programmable logic at any level of tooling. The second was economic, and it governed everything else: the cost of changing what the hardware does was too high. A GPU recompiles. An FPGA gets re-engineered. The essay closed on a conditional: if AI agents can absorb a large share of that cost of change, the second boom &mdash; the specialized systems that deployed AI creates demand for around the tensor computation &mdash; can go to FPGAs.</p>
 
       <p>That conditional has an uncomfortable corollary. The engineering cost being absorbed is us.</p>
 
@@ -89,7 +89,7 @@
 
       <p>For FPGA engineering the first condition is plainly met today and the second is a matter of observation. Most engineers in this field can name a project that was scoped, judged to need an FPGA, and never started, because the engineering cost did not pencil out against a microcontroller and a compromise. The instrument that needed a custom acquisition path. The network function that was offloaded badly to software because the FPGA team was booked for eighteen months. The small-volume product for which a bitstream was the right answer and six engineer-months was the wrong price. Demand for programmable logic is elastic because its price has been high for forty years.</p>
 
-      <p>When the price falls, the number of designs that pencil out rises. That is the positive case, and it is the same mechanism as the branch network. The ATM&rsquo;s second act is the warning attached to it: the expansion lasts as long as the engineer keeps moving toward the part of the work the machine cannot do.</p>
+      <p>When the price falls, the number of designs that pencil out rises. That is the positive case &mdash; the second boom of the previous post, arriving through the same mechanism as the branch network. The ATM&rsquo;s second act is the warning attached to it: the expansion lasts as long as the engineer keeps moving toward the part of the work the machine cannot do.</p>
 
       <h2>Where the constraint moves</h2>
 

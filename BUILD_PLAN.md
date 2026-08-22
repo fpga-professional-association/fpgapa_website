@@ -127,7 +127,7 @@ Five pages. No more.
 
 Header navigation appears on every page. Same five links, same order, no dropdown menus.
 
-Since v1: `ai-augmented-se.html`, `curriculum-fit.html`, and `blog.html` (plus posts under `blog/`) shipped as maintainer-approved additions. Header navigation now also links to Blog (see §15 on the blog decision).
+Since v1: `ai-augmented-se.html`, `curriculum-fit.html`, and `blog.html` (plus posts under `blog/`) shipped as maintainer-approved additions; the two course pages and their slide decks were later removed (2026-08-22), keeping the blog posts on the topic. Header navigation now also links to Blog (see §15 on the blog decision).
 
 ---
 

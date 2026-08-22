@@ -117,7 +117,7 @@ Five pages only. Adding pages requires maintainer approval.
 
 Plus `404.html` (custom 404).
 
-Maintainer-approved additions beyond v1: `ai-augmented-se.html`, `curriculum-fit.html`, `blog.html` plus posts under `blog/`. The blog ships now as static HTML (no Jekyll, no build step), superseding the "defer to Jekyll" plan in `BUILD_PLAN.md` §15.
+Maintainer-approved additions beyond v1: `blog.html` plus posts under `blog/`. The blog ships now as static HTML (no Jekyll, no build step), superseding the "defer to Jekyll" plan in `BUILD_PLAN.md` §15. The AI-Augmented Systems Engineering course pages (`ai-augmented-se.html`, `curriculum-fit.html`) and their slide decks (`assets/courses/ai-augmented-se/`) were removed 2026-08-22; the blog posts covering the topic remain.
 
 ## PR workflow
 

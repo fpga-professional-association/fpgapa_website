@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Solve harder problems &mdash; FPGA Professional Association</title>
+  <meta name="description" content="AI is taking the execution layer of FPGA work. The evidence says the returned hours should go to problem finding — a measurable, trainable skill the schedule never allowed us to practice.">
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+  <link rel="stylesheet" href="/styles.css">
+  <meta property="og:title" content="Solve harder problems">
+  <meta property="og:description" content="AI is taking the work. Whether it takes the job depends on what we do with the hours.">
+  <meta property="og:type" content="article">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<header class="site-header">
+  <div class="site-header__inner">
+    <a class="site-header__brand" href="/">FPGA PA</a>
+    <nav class="site-nav" aria-label="Main">
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/about.html">About</a></li>
+        <li><a href="/resources.html">Resources</a></li>
+        <li><a href="/tools.html">Tools</a></li>
+        <li><a href="/blog.html" aria-current="page">Blog</a></li>
+        <li><a href="/contribute.html">Contribute</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main id="main" class="site-main">
+  <div class="container">
+    <article>
+
+      <p class="small"><a href="/blog.html">Blog</a> &rsaquo; Solve harder problems</p>
+
+      <h1>Solve harder problems</h1>
+      <p class="lead">AI is taking the work. Whether it takes the job depends on what we do with the hours.</p>
+      <p class="small">Published 2026-08-22.</p>
+
+      <p>The <a href="/blog/why-fpgas-missed-the-ai-boom.html">previous post on this site</a> argued that FPGAs missed the AI accelerator market because the cost of changing what the hardware does was too high. A GPU recompiles. An FPGA gets re-engineered. The essay closed on a conditional: if AI agents can absorb a large share of that engineering cost, the old economics of programmable logic deserve a second look.</p>
+
+      <p>That conditional has an uncomfortable corollary. The engineering cost being absorbed is us.</p>
+
+      <p>This post is about what to do with that. The short version is that the constraint on FPGA work is moving, from how fast a design can be executed to which designs are worth executing, and that the second constraint rewards a skill most of us have never been given the hours to practice.</p>
+
+      <h2>What is being automated</h2>
+
+      <p>It helps to be specific about the work that is leaving.</p>
+
+      <p>Ask an FPGA engineer what consumed last week and the answer is rarely architecture. It is the hour waiting for synthesis to confirm a one-line change. The crash two hours into place and route. The constraint file that describes a clock that no longer exists. The forum thread from 2014 that almost matches the error message. The license server. The hundreds of lines of UVM scaffolding required before the first interesting assertion. The timing report that has to be read, by a person, to find the one path that matters.</p>
+
+      <p>None of that is engineering judgment. It is the cost of getting the tools to accept judgment that was formed in the first twenty minutes.</p>
+
+      <p>The industry&rsquo;s own numbers say this load is already past capacity. The <a href="https://resources.sw.siemens.com/en-US/white-paper-2024-wilson-research-group-fpga-functional-verification-trend-report/">2024 Wilson Research Group study</a>, sponsored by Siemens EDA, reports that 87 percent of FPGA projects shipped with at least one non-trivial bug escaping into production. That is not a field short of problems. It is a field short of hours, spending the hours it has on execution and still not finishing.</p>
+
+      <p>This is the layer that current AI tooling attacks first, because it is the layer where the work is most regular: boilerplate, search, translation of tool output into plain language, first drafts of testbenches, log parsing, the mechanical reading of reports. It is also the layer <a href="https://github.com/fpga-professional-association/CovertEDA">the association&rsquo;s own tooling work</a> targets, for the same reason.</p>
+
+      <p>So the phrase &ldquo;AI is taking our jobs&rdquo; deserves a more precise restatement. AI is taking the part of the job that was never the job. The question is what the engineer does with the hours that come back.</p>
+
+      <h2>What the measurements say</h2>
+
+      <p>The candid summary of the evidence is that the hours do come back, but not evenly, and not where an expert might expect.</p>
+
+      <p>The <a href="https://academic.oup.com/qje/article/140/2/889/7990658">largest field study so far</a> followed 5,172 customer-support agents after a generative assistant was introduced. Productivity rose 15 percent on average. The gain was concentrated among the least experienced workers, who got faster and better. The most experienced saw small speed gains and small declines in quality.</p>
+
+      <p>A <a href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4573321">pre-registered experiment</a> with 758 consultants at Boston Consulting Group found a similar shape. On eighteen tasks that sat inside what the authors call the jagged frontier of the model&rsquo;s competence, consultants using GPT-4 finished 12.2 percent more tasks, 25.1 percent faster, with quality rated about 40 percent higher. On a task deliberately chosen to sit outside that frontier, the same tool made them 19 percentage points less likely to reach the right answer. The model was wrong with confidence, and the consultants extended it trust it had not earned.</p>
+
+      <p>The study closest to our own work is the least flattering. In 2025 METR ran a <a href="https://arxiv.org/abs/2507.09089">randomized trial</a> with sixteen experienced open-source developers completing 246 real tasks in repositories they had maintained for years. With AI tools allowed, tasks took 19 percent longer. The developers had predicted a 24 percent speedup, and after finishing, still believed they had been 20 percent faster. METR&rsquo;s <a href="https://metr.org/blog/2026-02-24-uplift-update/">follow-up in February 2026</a> found the same developers now appear roughly 18 percent faster with the tools, but with a confidence interval wide enough to include no effect, and with selection problems the authors flagged themselves.</p>
+
+      <p>Three things follow.</p>
+
+      <p>First, the gain is real and largest on unfamiliar ground. Novices gain more than experts. Tasks inside the model&rsquo;s competence gain; tasks outside it lose.</p>
+
+      <p>Second, for an expert working on familiar ground, the machine is not yet a multiplier, and the feeling of speed is unreliable. If you want to know whether a tool is making you faster, time it. Do not ask yourself.</p>
+
+      <p>Third, and this is the point of the post: the condition under which an expert gains most is the condition of stepping outside familiar ground. That is also the condition of working on a bigger problem. The evidence does not say that AI makes a good engineer faster at what they already do. It says it makes them viable at what they could not previously afford to attempt.</p>
+
+      <h2>The bank teller precedent</h2>
+
+      <p>Whether fewer hours per task means fewer engineers depends on something the hours do not tell you: whether the demand for the work is elastic.</p>
+
+      <p>The standard case study is the automated teller machine. James Bessen&rsquo;s <a href="https://www.imf.org/external/pubs/ft/fandd/2015/03/bessen.htm">account for the IMF</a> documents that between 1988 and 2004 the number of tellers required to run an average urban branch fell from about twenty to about thirteen. A cheaper branch was a branch worth opening, and urban branches increased 43 percent. Total teller employment did not fall through 2010. The task was automated; the occupation grew, because the task had been the bottleneck on how many branches a bank could afford.</p>
+
+      <p>The story has a second half that is less often told. After roughly 2010, mobile banking absorbed the transactions the ATM had left to humans, and teller employment <a href="https://www.bls.gov/ooh/office-and-administrative-support/tellers.htm">has been declining since</a>. Automation expands an occupation while the human still holds the part the machine cannot do, and while there is unmet demand for that part. When both conditions lapse, the expansion ends.</p>
+
+      <p>For FPGA engineering the first condition is plainly met today and the second is a matter of observation. Most engineers in this field can name a project that was scoped, judged to need an FPGA, and never started, because the engineering cost did not pencil out against a microcontroller and a compromise. The instrument that needed a custom acquisition path. The network function that was offloaded badly to software because the FPGA team was booked for eighteen months. The small-volume product for which a bitstream was the right answer and six engineer-months was the wrong price. Demand for programmable logic is elastic because its price has been high for forty years.</p>
+
+      <p>When the price falls, the number of designs that pencil out rises. That is the positive case, and it is the same mechanism as the branch network. The ATM&rsquo;s second act is the warning attached to it: the expansion lasts as long as the engineer keeps moving toward the part of the work the machine cannot do.</p>
+
+      <h2>Where the constraint moves</h2>
+
+      <p>A crude model makes the shift visible.</p>
+
+      <p>The output of an engineering group is roughly</p>
+
+      <p><em>problems chosen &times; rate of execution.</em></p>
+
+      <p>For the entire history of the field, the second term has been the binding constraint. Execution was so expensive that problem selection barely registered as a separate activity. You worked on whatever the schedule handed you, and the schedule handed you whatever could be finished.</p>
+
+      <p>When the execution rate rises, the constraint moves to the first term. The question is no longer how fast the design can be built but which design is worth building, and that question turns out to be harder than it looks.</p>
+
+      <p><a href="https://archive.org/details/evolutionofphysi033254mbp">Einstein and Infeld</a> made the point in 1938: formulating a problem is often more essential than solving it, because solving may be only a matter of mathematical or experimental skill, while raising a new question requires imagination. Richard Hamming <a href="https://www.cs.virginia.edu/~robins/YouAndYourResearch.html">made it uncomfortable</a> in 1986. His habit at Bell Labs was to sit down at lunch with people from other departments and ask, &ldquo;What are the important problems of your field?&rdquo; and then, a week later, ask what they were working on. He was not welcome at that table for long. His observation about colleagues who worked with the office door closed was that they were more productive in the short run and, a decade later, were working on slightly the wrong problems. Not by much. By enough.</p>
+
+      <p>Most FPGA engineers have never been allowed to practice the first term. The schedule filled every hour with the second. That is the constraint that is being removed, and it is the most optimistic fact in this essay: for the first time, problem selection is affordable.</p>
+
+      <h2>Problem finding is a skill, and it has been measured</h2>
+
+      <p>It is tempting to file &ldquo;find bigger problems&rdquo; under inspiration, where it cannot be taught. The research says otherwise, and it is older than most of the tools we use.</p>
+
+      <p>In the mid-1960s <a href="https://books.google.com/books/about/The_Creative_Vision.html?id=7GJPAAAAMAAJ">Jacob Getzels and Mihaly Csikszentmihalyi</a> put a few dozen students from the School of the Art Institute of Chicago in a studio with twenty-seven objects and asked each to produce a still life. Roughly half selected objects quickly and began drawing. The other half spent far longer handling, arranging, and rejecting objects, treating the task as a problem to be formulated rather than a problem to be solved. Independent judges rated the second group&rsquo;s work as more original. Follow-ups about seven years later, and again roughly eighteen years later, found that the students who had spent the most time formulating the problem were the ones most likely to have sustained careers in art. Many of the quick starters had left the field.</p>
+
+      <p>Later work made the mechanism testable. <a href="https://www.tandfonline.com/doi/abs/10.1207/s15326934crj1001_2">Reiter-Palmon and colleagues</a> gave 195 people six ill-defined, everyday problems and measured their ability to construct a problem definition before solving it. Problem-construction ability predicted both the quality and the originality of the solutions. More usefully, simply instructing people to engage actively in constructing the problem before solving it raised originality, and people with strong construction ability did best when the cues in the situation were diverse and inconsistent. Related work finds that experts engage in more deliberate problem construction than novices do.</p>
+
+      <p>The engineering translation is direct. Time spent formulating the problem is not overhead. It is the part of the work that predicts whether the rest was worth doing, and it responds to deliberate practice.</p>
+
+      <h2>The homogenization risk</h2>
+
+      <p>There is one finding that should temper the instinct to hand problem selection to the machine as well.</p>
+
+      <p>In 2024 <a href="https://www.science.org/doi/10.1126/sciadv.adn5290">Doshi and Hauser</a> ran an experiment in which some writers could request story ideas from a language model. Stories written with the machine&rsquo;s ideas were rated more creative, better written, and more enjoyable, especially for the least creative writers. They were also measurably more similar to one another than stories written without it. The authors describe the result as a social dilemma: each individual is better off, and the collective produces a narrower range of new work. The BCG experiment reported a similar narrowing in the variety of its consultants&rsquo; output.</p>
+
+      <p>If every engineer in the field asks the same assistant which problem to work on, the field converges on the same problems. The individual benefit is real and the collective cost is invisible until the interesting niches are empty.</p>
+
+      <p>Diversity of problem selection therefore has to come from people with different histories. Hamming&rsquo;s open door was a mechanism for this; he was borrowing other people&rsquo;s problems. A practitioner association is the same mechanism at larger scale. This one already spans India, the United Kingdom, the Middle East, and North America, and commercial and defense work, which is to say it already holds a wider distribution of problems than any one employer or any one model. That is not a marketing claim. It is the structural reason an association has something to contribute here that a tool vendor does not.</p>
+
+      <h2>Imagination is trainable, within limits</h2>
+
+      <p>The second instinct worth tempering is the belief that creativity training works as well as its vendors say.</p>
+
+      <p>The most cited review, by <a href="https://doi.org/10.1080/10400410409534549">Scott, Leritz, and Mumford in 2004</a>, pooled seventy studies and found an average effect of about 0.64 standard deviations, with the strongest results from programs that taught specific cognitive skills and heuristics through realistic, domain-appropriate exercises rather than from programs aimed at attitude or motivation.</p>
+
+      <p>In 2024 <a href="https://doi.org/10.1037/bul0000432">Sio and Lortie-Forgues</a> re-examined the field with 169 studies and 844 effect sizes, including a substantial number of unpublished ones. The raw average was 0.53. After four different corrections for publication bias, the estimate fell to between 0.29 and 0.32. Restricting to the nineteen highest-quality studies lowered it further, and only one study in the entire literature had been pre-registered. The one moderator that survived was the same one Scott found: training with cognitive content outperforms training without it.</p>
+
+      <p>The fair reading is that problem-finding skill is probably trainable, the effect is modest rather than dramatic, and the measurement is weak. Engineers will recognize the situation. It describes a technique that likely works, supported by a literature that has never been run to the standard the question deserves.</p>
+
+      <h2>What to do, as an engineer</h2>
+
+      <p>The practical response follows from the research rather than from optimism.</p>
+
+      <p>Reallocate the returned hours on purpose. When a tool gives back the hour you used to spend on scaffolding, the schedule will try to absorb it into more scaffolding. Getzels&rsquo;s finding is that the time spent formulating is the time that predicts the outcome, so the returned hour should go there, deliberately and on a calendar, before it goes anywhere else.</p>
+
+      <p>Write down the problems you have already declined. Every engineer carries a short list of designs that were judged too expensive to attempt. That list is the first place to look, because the cost that disqualified them is the cost that just changed. Hamming&rsquo;s description of the scientists he admired was that they carried ten or twenty important open problems in mind and tested every new idea that came along against the list. The habit is cheap and the hit rate is not zero.</p>
+
+      <p>Ask the question. Hamming&rsquo;s question is uncomfortable precisely because the answer is usually &ldquo;not the important ones.&rdquo; Ask it of colleagues at lunch and of yourself on Monday. Reiter-Palmon&rsquo;s result suggests the instruction alone has an effect; the act of constructing the problem before solving it improves the solution.</p>
+
+      <p>Use the machine for breadth, and verify at the edge. The jagged-frontier result cuts both ways. The tool is strongest where you are weakest, which is exactly where cross-domain problems live, so use it to read into the adjacent discipline you would never have had time for. It is also where it fails without telling you, so the judgment at the boundary stays with the engineer.</p>
+
+      <p>Time yourself. The METR developers were confident and wrong. Measure whether a tool is actually faster for you on the work you actually do, and be ready for the answer to differ by task.</p>
+
+      <h2>The broader point</h2>
+
+      <p>The <a href="/blog/why-fpgas-missed-the-ai-boom.html">previous post</a> closed with the observation that the FPGA may not have needed a better C compiler. It may have needed a machine that could become the FPGA engineer.</p>
+
+      <p>That machine is arriving in pieces, and each piece takes a piece of the work. The response that the evidence supports is not to defend the work. It is to notice that the work was never the scarce thing. The scarce thing was always the engineer&rsquo;s judgment about what was worth building, and for forty years that judgment was rationed by the cost of building it.</p>
+
+      <p>The shackles were not the tools. They were the hours the tools consumed. With the hours returning, the instruction is the title.</p>
+
+      <p>Solve harder problems.</p>
+
+      <h2>Sources</h2>
+
+      <ul>
+        <li>Siemens EDA / Wilson Research Group, &ldquo;2024 FPGA Functional Verification Trend Report.&rdquo; Reports that 87 percent of FPGA projects had non-trivial bug escapes into production. <a href="https://resources.sw.siemens.com/en-US/white-paper-2024-wilson-research-group-fpga-functional-verification-trend-report/">resources.sw.siemens.com</a></li>
+        <li>Brynjolfsson, Li, and Raymond, &ldquo;Generative AI at Work,&rdquo; Quarterly Journal of Economics 140(2), May 2025. 5,172 customer-support agents; 15 percent average productivity gain, concentrated among less experienced workers; small speed gains and small quality declines for the most experienced. <a href="https://academic.oup.com/qje/article/140/2/889/7990658">academic.oup.com</a></li>
+        <li>Dell&rsquo;Acqua et al., &ldquo;Navigating the Jagged Technological Frontier,&rdquo; Harvard Business School Working Paper 24-013, September 2023; published in Organization Science, 2025. 758 BCG consultants; 12.2 percent more tasks, 25.1 percent faster, and roughly 40 percent higher quality inside the frontier; 19 percentage points less likely to be correct outside it. <a href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4573321">papers.ssrn.com</a></li>
+        <li>Becker, Rush, Barnes, and Rein (METR), &ldquo;Measuring the Impact of Early-2025 AI on Experienced Open-Source Developer Productivity,&rdquo; July 2025. 16 developers, 246 tasks; 19 percent slowdown with AI allowed, against a forecast 24 percent speedup and a post-hoc belief of 20 percent. <a href="https://arxiv.org/abs/2507.09089">arxiv.org</a></li>
+        <li>METR, &ldquo;We are Changing our Developer Productivity Experiment Design,&rdquo; February 24, 2026. Follow-up estimates and the selection-effect caveat. <a href="https://metr.org/blog/2026-02-24-uplift-update/">metr.org</a></li>
+        <li>Bessen, &ldquo;Toil and Technology,&rdquo; Finance &amp; Development, International Monetary Fund, March 2015. Tellers per urban branch, the 43 percent increase in urban branches, and teller employment through 2010. <a href="https://www.imf.org/external/pubs/ft/fandd/2015/03/bessen.htm">imf.org</a></li>
+        <li>U.S. Bureau of Labor Statistics, Occupational Outlook Handbook, &ldquo;Tellers.&rdquo; Documents the decline in teller employment since the early 2010s and projects continued decline. <a href="https://www.bls.gov/ooh/office-and-administrative-support/tellers.htm">bls.gov</a></li>
+        <li>Einstein and Infeld, The Evolution of Physics, Cambridge University Press and Simon &amp; Schuster, 1938. The passage on the formulation of a problem. <a href="https://archive.org/details/evolutionofphysi033254mbp">archive.org</a></li>
+        <li>Hamming, &ldquo;You and Your Research,&rdquo; Bell Communications Research Colloquium, March 7, 1986. Transcript. <a href="https://www.cs.virginia.edu/~robins/YouAndYourResearch.html">cs.virginia.edu</a></li>
+        <li>Getzels and Csikszentmihalyi, The Creative Vision: A Longitudinal Study of Problem Finding in Art, Wiley, 1976. The still-life study and the first follow-up; the eighteen-year follow-up is reported in Csikszentmihalyi&rsquo;s later work. <a href="https://books.google.com/books/about/The_Creative_Vision.html?id=7GJPAAAAMAAJ">books.google.com</a></li>
+        <li>Reiter-Palmon, Mumford, O&rsquo;Connor Boes, and Runco, &ldquo;Problem Construction and Creativity: The Role of Ability, Cue Consistency, and Active Processing,&rdquo; Creativity Research Journal 10(1), 1997. <a href="https://www.tandfonline.com/doi/abs/10.1207/s15326934crj1001_2">tandfonline.com</a></li>
+        <li>Doshi and Hauser, &ldquo;Generative AI enhances individual creativity but reduces the collective diversity of novel content,&rdquo; Science Advances 10(28), July 2024. <a href="https://www.science.org/doi/10.1126/sciadv.adn5290">science.org</a></li>
+        <li>Scott, Leritz, and Mumford, &ldquo;The Effectiveness of Creativity Training: A Quantitative Review,&rdquo; Creativity Research Journal 16(4), 2004. 70 studies; effect size and moderators. <a href="https://doi.org/10.1080/10400410409534549">doi.org</a></li>
+        <li>Sio and Lortie-Forgues, &ldquo;The Impact of Creativity Training on Creative Performance: A Meta-Analytic Review and Critical Evaluation of Five Decades of Creativity Training Studies,&rdquo; Psychological Bulletin 150(5), 2024. 169 studies, 844 effect sizes; bias-adjusted estimates. <a href="https://doi.org/10.1037/bul0000432">doi.org</a></li>
+      </ul>
+
+    </article>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="site-footer__inner">
+    <p class="site-footer__contact">Contact: <a href="mailto:contact@fpgapa.org">contact@fpgapa.org</a></p>
+    <p>Code: <a href="https://github.com/fpga-professional-association/fpgapa_website/blob/main/LICENSE">MIT</a>. Content: <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. <a href="https://github.com/fpga-professional-association/fpgapa_website">Source on GitHub</a>.</p>
+  </div>
+</footer>
+
+</body>
+</html>
